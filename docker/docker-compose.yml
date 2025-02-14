@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:latest
+    container_name: done-and-dusted-db
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: db-root-dev
+      MYSQL_DATABASE: done-and-dusted-db
+      MYSQL_USER:
+      MYSQL_PASSWORD:
+    volumes:
+      - done-and-dusted-db:/var/lib/mysql
+    restart: always
+
+volumes:
+  done-and-dusted-db:
