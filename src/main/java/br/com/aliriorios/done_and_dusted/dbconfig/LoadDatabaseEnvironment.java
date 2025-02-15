@@ -9,16 +9,17 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 @Configuration
-public class DatabaseConfig {
-    private final Map<String, Object> databaseConfig;
+public class LoadDatabaseEnvironment {
+    private final Map<String, Object> databaseEnv;
 
-    public DatabaseConfig () {
+    public LoadDatabaseEnvironment() {
         Yaml yaml = new Yaml();
         try {
-            String filePath = Paths.get("database/databse.yml").toAbsolutePath().toString();
+            /* Reading variables from "database.yml" */
+            String filePath = Paths.get("database/database.yml").toAbsolutePath().toString();
 
             try (InputStream inputStream = new FileInputStream(filePath)) {
-                this.databaseConfig = yaml.load(inputStream);
+                this.databaseEnv = yaml.load(inputStream);
             }
 
         } catch (Exception e) {
@@ -27,14 +28,14 @@ public class DatabaseConfig {
     }
 
     public String getUrl() {
-        return (String) databaseConfig.get("url");
+        return (String) databaseEnv.get("url");
     }
 
     public String getUsername() {
-        return (String) databaseConfig.get("username");
+        return (String) databaseEnv.get("username");
     }
 
     public String getPassword() {
-        return (String) databaseConfig.get("password");
+        return (String) databaseEnv.get("password");
     }
 }
