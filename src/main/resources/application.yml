@@ -4,10 +4,10 @@ server:
 spring:
   application:
     name: done-and-dusted
-  datasource: #Variables loaded from "DatabaseConfig.java"
-    url: "#{@databaseEnv.getUrl()}"
-    username: "#{@databaseEnv.getUsername()}"
-    password: "#{@databaseEnv.getPassword()}"
+  datasource:
+    url: jdbc:mysql://localhost:3306/done-and-dusted-db
+    username: alirio-dev
+    password: dev
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -16,6 +16,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
 
 logging:
   level:

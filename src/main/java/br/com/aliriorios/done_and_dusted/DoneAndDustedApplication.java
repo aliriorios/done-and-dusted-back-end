@@ -1,6 +1,5 @@
 package br.com.aliriorios.done_and_dusted;
 
-import br.com.aliriorios.done_and_dusted.model.entities.Users;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

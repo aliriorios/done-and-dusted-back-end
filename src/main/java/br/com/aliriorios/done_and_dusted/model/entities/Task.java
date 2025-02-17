@@ -1,8 +1,8 @@
 package br.com.aliriorios.done_and_dusted.model.entities;
 
+import jakarta.persistence.*;
 import lombok.*;
 
-import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.UUID;
 
@@ -11,18 +11,22 @@ import java.util.UUID;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Task {
-    @Id
     @EqualsAndHashCode.Include
     @Getter(AccessLevel.PRIVATE)
     @Setter(AccessLevel.NONE)
+    @Id
+    @GeneratedValue
+    @Column(columnDefinition = "CHAR(36)")
     private UUID id;
 
     @NonNull
+    @Column(nullable = false, length = 100)
     private String name;
 
     private String description;
 
     @NonNull
+    @Column(nullable = false)
     private LocalDate dueDate;
 
     //Enum (priority and status)
@@ -31,11 +35,4 @@ public class Task {
     @JoinColumn(name = "user_id")
     @NonNull
     private Users user;
-
-    @PrePersist
-    private void generateId() {
-        if (id == null) {
-            id = UUID.randomUUID();
-        }
-    }
 }

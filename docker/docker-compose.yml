@@ -7,8 +7,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: db-root-dev
       MYSQL_DATABASE: done-and-dusted-db
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: alirio-dev
+      MYSQL_PASSWORD: dev
     volumes:
       - done-and-dusted-db:/var/lib/mysql
       - ./database/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
