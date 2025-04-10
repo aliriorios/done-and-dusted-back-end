@@ -11,8 +11,7 @@ services:
       MYSQL_PASSWORD: dev
     volumes:
       - done-and-dusted-db:/var/lib/mysql
-      - ./database/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     restart: always
 
 volumes:
-  done-and-dusted-db:
+  done-and-dusted-db: {}
