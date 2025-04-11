@@ -25,7 +25,7 @@ public class User implements Serializable {
     @ToString.Include
     private String username;
 
-    @Column(name = "username", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Enumerated(EnumType.STRING)
