@@ -1,7 +1,7 @@
 package br.com.aliriorios.done_and_dusted.web.dto.mapper;
 
 import br.com.aliriorios.done_and_dusted.entity.User;
-import br.com.aliriorios.done_and_dusted.web.dto.user.UserCreateDto;
+import br.com.aliriorios.done_and_dusted.web.dto.RegisterDto;
 import br.com.aliriorios.done_and_dusted.web.dto.user.UserResponseDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import org.modelmapper.TypeMap;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserMapper {
-    public static User toUser(UserCreateDto createDto) {
+    public static User toUser(RegisterDto createDto) {
         return new ModelMapper().map(createDto, User.class);
     }
 

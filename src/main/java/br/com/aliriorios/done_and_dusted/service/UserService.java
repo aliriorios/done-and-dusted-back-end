@@ -17,6 +17,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    // SAVE -----------------------------------------------
     @Transactional
     public User save(User user) {
         try {
@@ -28,6 +29,7 @@ public class UserService {
         }
     }
 
+    // FIND -----------------------------------------------
     @Transactional(readOnly = true)
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(
