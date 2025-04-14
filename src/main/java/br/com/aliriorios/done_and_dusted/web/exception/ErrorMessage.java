@@ -43,11 +43,29 @@ public class ErrorMessage {
         addErrors(result);
     }
 
+    public ErrorMessage(HttpServletRequest request, HttpStatus status, String message, BindingResult result, MessageSource messageSource) {
+        this.path = request.getRequestURI();
+        this.method = request.getMethod();
+        this.status = status.value();
+        this.statusText = status.getReasonPhrase();
+        this.message = message;
+
+        addErrors(result, messageSource, request.getLocale());
+    }
+
     private void addErrors(BindingResult result) {
         // Response error to client with error's info (JSON)
         this.errors = new HashMap<>();
         for (FieldError fieldError : result.getFieldErrors()) {
             this.errors.put(fieldError.getField(), fieldError.getDefaultMessage());
+        }
+    }
+
+    private void addErrors(BindingResult result, MessageSource messageSource, Locale locale) {
+        this.errors = new HashMap<>();
+        for (FieldError fieldError : result.getFieldErrors()) {
+            String translatedMessage = messageSource.getMessage(fieldError, locale);
+            this.errors.put(fieldError.getField(), translatedMessage);
         }
     }
 }
