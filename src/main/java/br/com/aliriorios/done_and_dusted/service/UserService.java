@@ -31,12 +31,20 @@ public class UserService {
 
     // FIND -----------------------------------------------
     @Transactional(readOnly = true)
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User [id=%s] not founded.", id))
+        );
+    }
+
+    @Transactional(readOnly = true)
     public User findByUsername(String username) {
         return userRepository.findByUsername(username).orElseThrow(
                 () -> new EntityNotFoundException(String.format("User [%s] not founded.", username))
         );
     }
 
+    @Transactional(readOnly = true)
     public Role findRoleByUsername(String username) {
         return userRepository.findRoleByUsername(username);
     }
