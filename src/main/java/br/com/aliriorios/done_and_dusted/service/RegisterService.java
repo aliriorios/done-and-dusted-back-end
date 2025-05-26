@@ -30,4 +30,9 @@ public class RegisterService {
 
         return ClientMapper.toResponseDto(client);
     }
+
+    public void deleteAccount (Long id) {
+        clientService.deleteById(id);
+        userService.deleteById(id);
+    }
 }

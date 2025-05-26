@@ -48,4 +48,11 @@ public class UserService {
     public Role findRoleByUsername(String username) {
         return userRepository.findRoleByUsername(username);
     }
+
+    // DELETE ---------------------------------------------
+    @Transactional
+    public void deleteById(Long id) {
+        User user = findById(id);
+        userRepository.deleteById(user.getId());
+    }
 }

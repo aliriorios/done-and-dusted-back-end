@@ -1,6 +1,7 @@
 package br.com.aliriorios.done_and_dusted.web.controller;
 
 import br.com.aliriorios.done_and_dusted.entity.User;
+import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.service.RegisterService;
 import br.com.aliriorios.done_and_dusted.service.UserService;
 import br.com.aliriorios.done_and_dusted.web.dto.RegisterDto;
@@ -64,4 +65,14 @@ public class UserController {
     // PATCH ----------------------------------------------
 
     // DELETE ---------------------------------------------
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        try {
+            registerService.deleteAccount(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+    }
 }

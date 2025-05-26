@@ -1,0 +1,102 @@
+[
+  {
+    "username": "admin@email.com",
+    "password": "123456",
+    "clientName": "Admin"
+  },
+  {
+    "username": "maria.silva@email.com",
+    "password": "123456",
+    "clientName": "Maria Silva"
+  },
+  {
+    "username": "joao.souza@email.com",
+    "password": "123456",
+    "clientName": "Joao Souza"
+  },
+  {
+    "username": "ana.lima@email.com",
+    "password": "123456",
+    "clientName": "Ana Lima"
+  },
+  {
+    "username": "pedro.costa@email.com",
+    "password": "123456",
+    "clientName": "Pedro Costa"
+  },
+  {
+    "username": "juliana.martins@email.com",
+    "password": "123456",
+    "clientName": "Juliana Martins"
+  },
+  {
+    "username": "lucas.almeida@email.com",
+    "password": "123456",
+    "clientName": "Lucas Almeida"
+  },
+  {
+    "username": "fernanda.gomes@email.com",
+    "password": "123456",
+    "clientName": "Fernanda Gomes"
+  },
+  {
+    "username": "rafael.santos@email.com",
+    "password": "123456",
+    "clientName": "Rafael Santos"
+  },
+  {
+    "username": "camila.oliveira@email.com",
+    "password": "123456",
+    "clientName": "Camila Oliveira"
+  },
+  {
+    "username": "bruno.rodrigues@email.com",
+    "password": "123456",
+    "clientName": "Bruno Rodrigues"
+  },
+  {
+    "username": "leticia.fernandes@email.com",
+    "password": "123456",
+    "clientName": "Leticia Fernandes"
+  },
+  {
+    "username": "marcos.pereira@email.com",
+    "password": "123456",
+    "clientName": "Marcos Pereira"
+  },
+  {
+    "username": "paula.araujo@email.com",
+    "password": "123456",
+    "clientName": "Paula Araujo"
+  },
+  {
+    "username": "andre.moura@email.com",
+    "password": "123456",
+    "clientName": "Andre Moura"
+  },
+  {
+    "username": "taina.ramos@email.com",
+    "password": "123456",
+    "clientName": "Taina Ramos"
+  },
+  {
+    "username": "roberto.nunes@email.com",
+    "password": "123456",
+    "clientName": "Roberto Nunes"
+  },
+  {
+    "username": "carla.teixeira@email.com",
+    "password": "123456",
+    "clientName": "Carla Teixeira"
+  },
+  {
+    "username": "felipe.machado@email.com",
+    "password": "123456",
+    "clientName": "Felipe Machado"
+  },
+  {
+    "username": "aline.cardoso@email.com",
+    "password": "123456",
+    "clientName": "Aline Cardoso"
+  }
+]
