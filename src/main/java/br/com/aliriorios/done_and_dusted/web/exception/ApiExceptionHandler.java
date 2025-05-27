@@ -1,8 +1,6 @@
 package br.com.aliriorios.done_and_dusted.web.exception;
 
-import br.com.aliriorios.done_and_dusted.exception.CpfUniqueViolationException;
-import br.com.aliriorios.done_and_dusted.exception.RgUniqueViolationException;
-import br.com.aliriorios.done_and_dusted.exception.UsernameUniqueViolationException;
+import br.com.aliriorios.done_and_dusted.exception.*;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,5 +37,23 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, e.getMessage()));
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorMessage> NotFoundException (RuntimeException e, HttpServletRequest request) {
+        log.error("Api Error: - ", e);
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
+    }
+
+    @ExceptionHandler(PasswordInvalidException.class)
+    public ResponseEntity<ErrorMessage> PasswordInvalidException (RuntimeException e, HttpServletRequest request) {
+        log.error("Api Error - ", e);
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, e.getMessage()));
     }
 }

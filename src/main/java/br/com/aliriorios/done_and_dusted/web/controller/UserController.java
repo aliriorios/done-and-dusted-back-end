@@ -8,6 +8,7 @@ import br.com.aliriorios.done_and_dusted.web.dto.RegisterDto;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.UserMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.user.UserResponseDto;
+import br.com.aliriorios.done_and_dusted.web.dto.user.UserUpdatePasswordDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/api/v1/users")
@@ -54,15 +56,20 @@ public class UserController {
     // GET ------------------------------------------------
     @GetMapping(value = "/{id}")
     public ResponseEntity<UserResponseDto> findById(@PathVariable Long id) {
-        User response = userService.findById(id);
+        Optional<User> response = Optional.ofNullable(userService.findById(id));
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(UserMapper.toResponseDto(response));
+                .body(UserMapper.toResponseDto(response.get()));
     }
 
     // PUT ------------------------------------------------
 
     // PATCH ----------------------------------------------
+    @PatchMapping(value = "settings/update-password/{id}")
+    public ResponseEntity<Void> updatePassword (@PathVariable Long id, @Valid @RequestBody UserUpdatePasswordDto dto) {
+        userService.updatePassword(id, dto.getCurrentPassword(), dto.getNewPassword(), dto.getConfirmPassword());
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
 
     // DELETE ---------------------------------------------
     @DeleteMapping(value = "/{id}")

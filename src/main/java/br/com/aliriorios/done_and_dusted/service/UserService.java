@@ -3,6 +3,7 @@ package br.com.aliriorios.done_and_dusted.service;
 import br.com.aliriorios.done_and_dusted.entity.User;
 import br.com.aliriorios.done_and_dusted.entity.enums.Role;
 import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
+import br.com.aliriorios.done_and_dusted.exception.PasswordInvalidException;
 import br.com.aliriorios.done_and_dusted.exception.UsernameUniqueViolationException;
 import br.com.aliriorios.done_and_dusted.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -54,5 +55,19 @@ public class UserService {
     public void deleteById(Long id) {
         User user = findById(id);
         userRepository.deleteById(user.getId());
+    }
+
+    @Transactional
+    public void updatePassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new PasswordInvalidException("New password does not match password confirmation.");
+        }
+
+        User user = findById(id);
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new PasswordInvalidException("The password entered does not match the user's");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
     }
 }
