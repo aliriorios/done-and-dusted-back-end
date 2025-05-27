@@ -18,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // SAVE -----------------------------------------------
+    // POST -----------------------------------------------
     @Transactional
     public User save(User user) {
         try {
@@ -30,7 +30,7 @@ public class UserService {
         }
     }
 
-    // FIND -----------------------------------------------
+    // GET -----------------------------------------------
     @Transactional(readOnly = true)
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(
@@ -57,6 +57,7 @@ public class UserService {
         userRepository.deleteById(user.getId());
     }
 
+    // PATCH ----------------------------------------------
     @Transactional
     public void updatePassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {

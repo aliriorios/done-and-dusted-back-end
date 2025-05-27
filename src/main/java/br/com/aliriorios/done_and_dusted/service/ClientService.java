@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ClientService {
     private final ClientRepository clientRepository;
 
-    // SAVE -----------------------------------------------
+    // POST -----------------------------------------------
     @Transactional
     public Client save(Client client) {
         return clientRepository.save(client);
     }
 
-    // FIND -----------------------------------------------
+    // GET -----------------------------------------------
     @Transactional(readOnly = true)
     public Client findById(Long id) {
         return clientRepository.findById(id).orElseThrow(

@@ -9,6 +9,11 @@ import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.UserMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.user.UserResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.user.UserUpdatePasswordDto;
+import br.com.aliriorios.done_and_dusted.web.exception.ErrorMessage;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +36,15 @@ public class UserController {
 
     // POST -----------------------------------------------
     @PostMapping
+    @Operation (
+            summary = "Create a new user", description = "Feature to create a new user",
+            responses = {
+                    @ApiResponse(responseCode = "201", description = "Successfully created resource", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ClientResponseDto.class))),
+                    @ApiResponse(responseCode = "400", description = "Bad request (invalid JSON or empty required fields)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "409", description = "User e-mail already registered in the system", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     public ResponseEntity<ClientResponseDto> register(@Valid @RequestBody RegisterDto createDto) {
         try {
             ClientResponseDto response = registerService.register(createDto);
@@ -55,6 +69,15 @@ public class UserController {
 
     // GET ------------------------------------------------
     @GetMapping(value = "/{id}")
+    @Operation(
+            summary = "Find a user by id", description = "Feature to find an existing user via id - Requisition requires a Bearer Token.",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "User found successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     public ResponseEntity<UserResponseDto> findById(@PathVariable Long id) {
         Optional<User> response = Optional.ofNullable(userService.findById(id));
         return ResponseEntity
@@ -62,10 +85,18 @@ public class UserController {
                 .body(UserMapper.toResponseDto(response.get()));
     }
 
-    // PUT ------------------------------------------------
-
     // PATCH ----------------------------------------------
     @PatchMapping(value = "settings/update-password/{id}")
+    @Operation(
+            summary = "Update password", description = "Update a user's password - Requisition requires a Bearer Token",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Password successfully updated"),
+                    @ApiResponse(responseCode = "400", description = "Misinformed or formatted passwords or id", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     public ResponseEntity<Void> updatePassword (@PathVariable Long id, @Valid @RequestBody UserUpdatePasswordDto dto) {
         userService.updatePassword(id, dto.getCurrentPassword(), dto.getNewPassword(), dto.getConfirmPassword());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -73,6 +104,16 @@ public class UserController {
 
     // DELETE ---------------------------------------------
     @DeleteMapping(value = "/{id}")
+    @Operation(
+            summary = "Delete an user", description = "Feature to delete an existing user via id - Requisition requires a Bearer Token",
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Successful deletion"),
+                    @ApiResponse(responseCode = "400", description = "Misinformed or formatted passwords or id", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "504", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+            }
+    )
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         try {
             registerService.deleteAccount(id);
