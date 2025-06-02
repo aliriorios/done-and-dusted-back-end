@@ -18,7 +18,7 @@ public class ClientService {
         return clientRepository.save(client);
     }
 
-    // GET -----------------------------------------------
+    // GET ------------------------------------------------
     @Transactional(readOnly = true)
     public Client findById(Long id) {
         return clientRepository.findById(id).orElseThrow(
