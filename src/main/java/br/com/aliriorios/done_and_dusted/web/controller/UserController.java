@@ -32,7 +32,7 @@ import java.util.Optional;
 @RequestMapping(value = "/api/v1/users")
 @RequiredArgsConstructor
 @Slf4j
-@Tag(name = "Users", description = "Contains all operations related to the resources for user")
+@Tag(name = "Users", description = "Contains all operations related to the resources to a user's resources")
 public class UserController {
     private final UserService userService;
     private final RegisterService registerService;
