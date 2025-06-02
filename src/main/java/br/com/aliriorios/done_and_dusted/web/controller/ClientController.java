@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(value = "/api/v1/clients")
 @RequiredArgsConstructor
@@ -23,10 +25,10 @@ public class ClientController {
     // GET ------------------------------------------------
     @GetMapping(value = "/{id}")
     public ResponseEntity<ClientResponseDto> findById (@PathVariable Long id) {
-        Client client = clientService.findById(id);
+        Optional<Client> response = Optional.ofNullable(clientService.findById(id));
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(ClientMapper.toResponseDto(client));
+                .body(ClientMapper.toResponseDto(response.get()));
     }
 
     // PUT ------------------------------------------------

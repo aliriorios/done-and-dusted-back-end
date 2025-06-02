@@ -50,13 +50,6 @@ public class UserService {
         return userRepository.findRoleByUsername(username);
     }
 
-    // DELETE ---------------------------------------------
-    @Transactional
-    public void deleteById(Long id) {
-        User user = findById(id);
-        userRepository.deleteById(user.getId());
-    }
-
     // PATCH ----------------------------------------------
     @Transactional
     public void updatePassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
@@ -70,5 +63,12 @@ public class UserService {
         }
 
         user.setPassword(passwordEncoder.encode(newPassword));
+    }
+
+    // DELETE ---------------------------------------------
+    @Transactional
+    public void deleteById(Long id) {
+        User user = findById(id);
+        userRepository.deleteById(user.getId());
     }
 }

@@ -22,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -33,6 +35,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 @Tag(name = "Users", description = "Contains all operations related to the resources to a user's resources")
+@EnableMethodSecurity
 public class UserController {
     private final UserService userService;
     private final RegisterService registerService;
@@ -73,20 +76,22 @@ public class UserController {
     // GET ------------------------------------------------
     @GetMapping(value = "/{id}")
     @Operation(
-            summary = "Find a user by id", description = "Feature to find an existing user via id - Requisition requires a Bearer Token.",
+            summary = "Find a user by id", description = "Feature to find an existing user via id - Requisition requires a Bearer Token - Restricted access to ADMIN or CLIENT (own client id)",
             security = @SecurityRequirement(name = "Security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "User found successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "403", description = "User without permission to access this feature", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "404", description = "User not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENT') AND #id == authentication.principal.id)")
     public ResponseEntity<UserResponseDto> findById(@PathVariable Long id) {
-        Optional<User> response = Optional.ofNullable(userService.findById(id));
+        User user = userService.findById(id);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(UserMapper.toResponseDto(response.get()));
+                .body(UserMapper.toResponseDto(user));
     }
 
     // PATCH ----------------------------------------------
@@ -102,6 +107,7 @@ public class UserController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
     public ResponseEntity<Void> updatePassword (@PathVariable Long id, @Valid @RequestBody UserUpdatePasswordDto dto) {
         userService.updatePassword(id, dto.getCurrentPassword(), dto.getNewPassword(), dto.getConfirmPassword());
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -120,6 +126,7 @@ public class UserController {
                     @ApiResponse(responseCode = "504", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         try {
             registerService.deleteAccount(id);

@@ -3,6 +3,7 @@ package br.com.aliriorios.done_and_dusted.config;
 import br.com.aliriorios.done_and_dusted.jwt.JwtAuthenticationEntryPoint;
 import br.com.aliriorios.done_and_dusted.jwt.JwtAuthorizationFilter;
 import br.com.aliriorios.done_and_dusted.jwt.JwtUserDetailsService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -51,7 +52,8 @@ public class SpringSecurityConfig {
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizationFilter(detailsService), UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(e -> e.authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
+                .exceptionHandling(e -> e
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
                 .build();
     }
 
