@@ -37,6 +37,17 @@ public class SpringSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/users")).permitAll()
                         .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/auth")).permitAll()
+                        .requestMatchers(
+                                antMatcher(HttpMethod.POST, "/api/v1/users"),
+                                antMatcher(HttpMethod.POST, "/api/v1/auth"),
+                                antMatcher("/docs-done-and-dusted.html"),
+                                antMatcher("/docs-done-and-dusted/**"),
+                                antMatcher("/swagger-ui.html"),
+                                antMatcher("/swagger-ui/**"),
+                                antMatcher("/v3/api-docs/**"),
+                                antMatcher("/swagger-resources/**"),
+                                antMatcher("/webjars/**")
+                        ).permitAll()
                         .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthorizationFilter(detailsService), UsernamePasswordAuthenticationFilter.class)

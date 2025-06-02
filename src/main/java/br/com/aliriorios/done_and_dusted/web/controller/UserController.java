@@ -14,6 +14,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ import java.util.Optional;
 @RequestMapping(value = "/api/v1/users")
 @RequiredArgsConstructor
 @Slf4j
+@Tag(name = "Users", description = "Contains all operations related to the resources for user")
 public class UserController {
     private final UserService userService;
     private final RegisterService registerService;
@@ -71,6 +74,7 @@ public class UserController {
     @GetMapping(value = "/{id}")
     @Operation(
             summary = "Find a user by id", description = "Feature to find an existing user via id - Requisition requires a Bearer Token.",
+            security = @SecurityRequirement(name = "Security"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "User found successfully", content = @Content(mediaType = "application/json", schema = @Schema(implementation = UserResponseDto.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
@@ -86,9 +90,10 @@ public class UserController {
     }
 
     // PATCH ----------------------------------------------
-    @PatchMapping(value = "settings/update-password/{id}")
+    @PatchMapping(value = "/update-password/{id}")
     @Operation(
             summary = "Update password", description = "Update a user's password - Requisition requires a Bearer Token",
+            security = @SecurityRequirement(name = "Security"),
             responses = {
                     @ApiResponse(responseCode = "204", description = "Password successfully updated"),
                     @ApiResponse(responseCode = "400", description = "Misinformed or formatted passwords or id", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
@@ -106,6 +111,7 @@ public class UserController {
     @DeleteMapping(value = "/{id}")
     @Operation(
             summary = "Delete an user", description = "Feature to delete an existing user via id - Requisition requires a Bearer Token",
+            security = @SecurityRequirement(name = "Security"),
             responses = {
                     @ApiResponse(responseCode = "204", description = "Successful deletion"),
                     @ApiResponse(responseCode = "400", description = "Misinformed or formatted passwords or id", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
