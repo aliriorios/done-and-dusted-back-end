@@ -15,7 +15,13 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
-@Table(name = "clients")
+@Table(
+        name = "clients",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "uk_client_rg", columnNames = "rg"),
+                @UniqueConstraint(name = "uk_client_cpf", columnNames = "cpf")
+        }
+)
 @Getter @Setter @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
 @EntityListeners(AuditingEntityListener.class)

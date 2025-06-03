@@ -109,7 +109,9 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
     public ResponseEntity<Void> updatePassword (@PathVariable Long id, @Valid @RequestBody UserUpdatePasswordDto dto) {
         userService.updatePassword(id, dto.getCurrentPassword(), dto.getNewPassword(), dto.getConfirmPassword());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
     // DELETE ---------------------------------------------
@@ -129,10 +131,14 @@ public class UserController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         try {
             registerService.deleteAccount(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
 
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
         }
     }
 }

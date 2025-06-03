@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -21,8 +22,9 @@ public class ApiExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> MethodArgumentNotValidException (MethodArgumentNotValidException e, HttpServletRequest request, BindingResult result) {
+    public ResponseEntity<ErrorMessage> MethodArgumentNotValidException (MethodArgumentNotValidException e, HttpServletRequest request) {
         log.error("Api Error - ", e);
+        BindingResult result = e.getBindingResult();
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)

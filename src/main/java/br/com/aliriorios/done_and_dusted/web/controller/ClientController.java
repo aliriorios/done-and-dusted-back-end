@@ -4,6 +4,7 @@ import br.com.aliriorios.done_and_dusted.entity.Client;
 import br.com.aliriorios.done_and_dusted.jwt.JwtUserDetails;
 import br.com.aliriorios.done_and_dusted.service.ClientService;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
+import br.com.aliriorios.done_and_dusted.web.dto.client.ClientUpdateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.ClientMapper;
 import br.com.aliriorios.done_and_dusted.web.exception.ErrorMessage;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,15 +13,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/v1/clients")
@@ -65,9 +64,17 @@ public class ClientController {
     @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<ClientResponseDto> findDetails (@AuthenticationPrincipal JwtUserDetails userDetails) {
         Client client = clientService.findByUserId(userDetails.getId());
-        return ResponseEntity.status(HttpStatus.OK)
+        return ResponseEntity
+                .status(HttpStatus.OK)
                 .body(ClientMapper.toResponseDto(client));
     }
 
     // PATCH ----------------------------------------------
+    @PatchMapping(value = "/update-profile")
+    public ResponseEntity<Void> updateProfile (@AuthenticationPrincipal JwtUserDetails userDetails, @Valid @RequestBody ClientUpdateDto updateDto) {
+        clientService.updateProfile(userDetails.getId(), updateDto);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 }
