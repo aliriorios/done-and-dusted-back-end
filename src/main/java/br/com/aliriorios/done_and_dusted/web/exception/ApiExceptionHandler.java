@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +17,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 @RequiredArgsConstructor
 public class ApiExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> methodArgumentNotValidException (MethodArgumentNotValidException e, HttpServletRequest request, BindingResult result) {
+    public ResponseEntity<ErrorMessage> methodArgumentNotValid (MethodArgumentNotValidException e, HttpServletRequest request) {
         log.error("Api Error - ", e);
+
+        BindingResult result = e.getBindingResult();
 
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -67,6 +72,7 @@ public class ApiExceptionHandler {
                 .body(new ErrorMessage(request, HttpStatus.FORBIDDEN, e.getMessage()));
     }
 
+    /*
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorMessage> internalServerErrorException (Exception e, HttpServletRequest request) {
         ErrorMessage error = new ErrorMessage(
@@ -79,4 +85,5 @@ public class ApiExceptionHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(error);
     }
+    */
 }
