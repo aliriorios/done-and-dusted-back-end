@@ -24,23 +24,21 @@ public class ApiExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> methodArgumentNotValid (MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorMessage> methodArgumentNotValid (MethodArgumentNotValidException e, HttpServletRequest request, BindingResult result) {
         log.error("Api Error - ", e);
 
-        BindingResult result = e.getBindingResult();
-
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+        return ResponseEntity
+                .status(HttpStatus.UNPROCESSABLE_ENTITY)
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY,
-                        messageSource.getMessage("message.invalid.field", null, request.getLocale()),
-                        result, messageSource));
+                .body(new ErrorMessage(request, HttpStatus.UNPROCESSABLE_ENTITY, "Invalid field(s)", result));
     }
 
     @ExceptionHandler({UsernameUniqueViolationException.class, CpfUniqueViolationException.class, RgUniqueViolationException.class})
     public ResponseEntity<ErrorMessage> uniqueViolationException(RuntimeException e, HttpServletRequest request) {
         log.error("Api Error - ", e);
 
-        return ResponseEntity.status(HttpStatus.CONFLICT)
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.CONFLICT, e.getMessage()));
     }
@@ -49,7 +47,8 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> notFoundException (RuntimeException e, HttpServletRequest request) {
         log.error("Api Error: - ", e);
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.NOT_FOUND, e.getMessage()));
     }
@@ -58,7 +57,8 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> passwordInvalidException (RuntimeException e, HttpServletRequest request) {
         log.error("Api Error - ", e);
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, e.getMessage()));
     }
@@ -67,7 +67,8 @@ public class ApiExceptionHandler {
     public ResponseEntity<ErrorMessage> accessDeniedException (AccessDeniedException e, HttpServletRequest request) {
         log.error("Api Error - ", e);
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(new ErrorMessage(request, HttpStatus.FORBIDDEN, e.getMessage()));
     }
@@ -81,7 +82,8 @@ public class ApiExceptionHandler {
 
         log.error("Internal Server Error {} {} - ", error, e.getMessage());
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(error);
     }
