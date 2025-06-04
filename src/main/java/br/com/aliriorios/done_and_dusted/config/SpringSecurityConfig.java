@@ -36,8 +36,7 @@ public class SpringSecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/users")).permitAll()
-                        .requestMatchers(antMatcher(HttpMethod.POST, "/api/v1/auth")).permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(
                                 antMatcher(HttpMethod.POST, "/api/v1/users"),
                                 antMatcher(HttpMethod.POST, "/api/v1/auth"),

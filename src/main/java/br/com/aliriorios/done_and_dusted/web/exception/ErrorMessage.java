@@ -26,35 +26,28 @@ public class ErrorMessage {
     private Map<String, String> errors;
 
     public ErrorMessage(HttpServletRequest request, HttpStatus status, String message) {
-        this.path = request.getRequestURI();
-        this.method = request.getMethod();
-        this.status = status.value();
-        this.statusText = status.getReasonPhrase();
-        this.message = message;
+        populateBaseInfo(request, status, message);
     }
 
     public ErrorMessage(HttpServletRequest request, HttpStatus status, String message, BindingResult result) {
-        this.path = request.getRequestURI();
-        this.method = request.getMethod();
-        this.status = status.value();
-        this.statusText = status.getReasonPhrase();
-        this.message = message;
-
+        populateBaseInfo(request, status, message);
         addErrors(result);
     }
 
     public ErrorMessage(HttpServletRequest request, HttpStatus status, String message, BindingResult result, MessageSource messageSource) {
+        populateBaseInfo(request, status, message);
+        addErrors(result, messageSource, request.getLocale());
+    }
+
+    private void populateBaseInfo(HttpServletRequest request, HttpStatus status, String message) {
         this.path = request.getRequestURI();
         this.method = request.getMethod();
         this.status = status.value();
         this.statusText = status.getReasonPhrase();
         this.message = message;
-
-        addErrors(result, messageSource, request.getLocale());
     }
 
     private void addErrors(BindingResult result) {
-        // Response error to client with error's info (JSON)
         this.errors = new HashMap<>();
         for (FieldError fieldError : result.getFieldErrors()) {
             this.errors.put(fieldError.getField(), fieldError.getDefaultMessage());
@@ -69,3 +62,4 @@ public class ErrorMessage {
         }
     }
 }
+
