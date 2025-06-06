@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(value = "/api/v1/clients")
 @RequiredArgsConstructor
 @Tag(name = "Clients", description = "Contains all operations related to a client's resources")
+@EnableMethodSecurity
 public class ClientController {
     private final ClientService clientService;
 

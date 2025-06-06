@@ -10,6 +10,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -24,7 +25,7 @@ public class ApiExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> methodArgumentNotValid (MethodArgumentNotValidException e, HttpServletRequest request, BindingResult result) {
+    public ResponseEntity<ErrorMessage> methodArgumentNotValid (RuntimeException e, HttpServletRequest request, BindingResult result) {
         log.error("Api Error - ", e);
 
         return ResponseEntity

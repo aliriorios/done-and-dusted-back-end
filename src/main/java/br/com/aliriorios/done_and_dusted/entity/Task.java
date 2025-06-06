@@ -7,6 +7,7 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ import java.util.Objects;
 @Table(name = "tasks")
 @Getter @Setter @NoArgsConstructor
 @ToString(onlyExplicitlyIncluded = true)
+@EntityListeners(AuditingEntityListener.class)
 public class Task implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +34,7 @@ public class Task implements Serializable {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 25)
-    private TaskStatus status;
+    private TaskStatus status = TaskStatus.STANDARD;
 
     // Aggregation ----------------------------------------
     @ManyToOne(optional = false)
