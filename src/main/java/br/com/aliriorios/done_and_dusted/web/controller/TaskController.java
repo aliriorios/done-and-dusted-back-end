@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+
 @RestController
 @RequestMapping(value = "/api/v1/tasks")
 @RequiredArgsConstructor
@@ -32,12 +34,9 @@ public class TaskController {
     public ResponseEntity<TaskResponseDto> save(@AuthenticationPrincipal JwtUserDetails userDetails, @Valid @RequestBody TaskCreateDto createDto) {
         Client client = clientService.findByUserId(userDetails.getId());
 
-        Task task = TaskMapper.toTask(createDto);
-        task.setClient(client);
-
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(TaskMapper.toResponseDto(taskService.save(task)));
+                .body(TaskMapper.toResponseDto(taskService.save(client, createDto)));
     }
 
     // GET ------------------------------------------------

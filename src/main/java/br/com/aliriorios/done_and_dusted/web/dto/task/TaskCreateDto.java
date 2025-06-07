@@ -1,11 +1,9 @@
 package br.com.aliriorios.done_and_dusted.web.dto.task;
 
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
-import java.time.LocalDate;
 
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @ToString
 public class TaskCreateDto {
@@ -14,7 +12,10 @@ public class TaskCreateDto {
 
     private String description;
 
-    @NotNull
-    @FutureOrPresent(message = "The date of the task must be present or future")
-    private LocalDate dueDate;
+    @NotBlank
+    @Pattern(
+            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
+            message = "Date format needs to be: yyyy-MM-dd"
+    )
+    private String dueDate;
 }
