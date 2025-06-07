@@ -14,7 +14,7 @@ public class TaskCreateDto {
 
     private String description;
 
-    @NotNull // Refazer a validação
+    @NotNull
     @FutureOrPresent(message = "The date of the task must be present or future")
     private LocalDate dueDate;
 }

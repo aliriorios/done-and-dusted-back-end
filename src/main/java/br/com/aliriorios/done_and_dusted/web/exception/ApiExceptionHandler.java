@@ -25,7 +25,7 @@ public class ApiExceptionHandler {
     private final MessageSource messageSource;
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorMessage> methodArgumentNotValid (RuntimeException e, HttpServletRequest request, BindingResult result) {
+    public ResponseEntity<ErrorMessage> methodArgumentNotValid (MethodArgumentNotValidException e, HttpServletRequest request, BindingResult result) {
         log.error("Api Error - ", e);
 
         return ResponseEntity
