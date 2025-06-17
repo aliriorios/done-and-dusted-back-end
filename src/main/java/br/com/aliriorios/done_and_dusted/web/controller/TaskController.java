@@ -10,11 +10,15 @@ import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskResponseDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import java.net.URI;
 
 @RestController
 @RequestMapping(value = "/api/v1/tasks")
@@ -28,10 +32,18 @@ public class TaskController {
     @PostMapping
     public ResponseEntity<TaskResponseDto> save(@AuthenticationPrincipal JwtUserDetails userDetails, @Valid @RequestBody TaskCreateDto createDto) {
         Client client = clientService.findByUserId(userDetails.getId());
+        Task task = taskService.save(client, createDto);
+
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(task.getId())
+                .toUri();
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(TaskMapper.toResponseDto(taskService.save(client, createDto)));
+                .header(HttpHeaders.LOCATION, location.toString())
+                .body(TaskMapper.toResponseDto(task));
     }
 
     // GET ------------------------------------------------

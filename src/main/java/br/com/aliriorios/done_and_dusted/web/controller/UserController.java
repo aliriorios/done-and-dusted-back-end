@@ -51,25 +51,17 @@ public class UserController {
             }
     )
     public ResponseEntity<ClientResponseDto> register(@Valid @RequestBody RegisterDto createDto) {
-        try {
-            ClientResponseDto response = registerService.register(createDto);
-            URI location = ServletUriComponentsBuilder
-                    .fromCurrentRequest()
-                    .path("/{id}")
-                    .buildAndExpand(response.getUser().getId())
-                    .toUri();
+        ClientResponseDto response = registerService.register(createDto);
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(response.getUser().getId())
+                .toUri();
 
-            return ResponseEntity
-                    .status(HttpStatus.CREATED)
-                    .header(HttpHeaders.LOCATION, location.toString())
-                    .body(response);
-
-        } catch (Exception e) {
-            log.error("Api error - ", e);
-            return ResponseEntity
-                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
-                    .build();
-        }
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .header(HttpHeaders.LOCATION, location.toString())
+                .body(response);
     }
 
     // GET ------------------------------------------------
