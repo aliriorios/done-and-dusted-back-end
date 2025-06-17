@@ -121,18 +121,11 @@ public class UserController {
                     @ApiResponse(responseCode = "504", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
-    @PreAuthorize("hasRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
+    @PreAuthorize("hasAnyRole('ADMIN', 'CLIENT') AND (#id == authentication.principal.id)")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        try {
-            registerService.deleteAccount(id);
-            return ResponseEntity
-                    .status(HttpStatus.NO_CONTENT)
-                    .build();
-
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
-        }
+        registerService.deleteAccount(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 }
