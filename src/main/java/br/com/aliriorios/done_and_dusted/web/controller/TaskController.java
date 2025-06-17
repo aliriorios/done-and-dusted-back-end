@@ -55,4 +55,12 @@ public class TaskController {
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAllTasks() {
+        taskService.deleteAllTasks();
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 }

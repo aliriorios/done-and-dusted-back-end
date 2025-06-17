@@ -21,8 +21,8 @@ public class JwtUtils {
     public static final String JWT_AUTHORIZATION = "Authorization";
     public static final String SECRET_KEY = "8374659201-4901728365-1582946037";
     public static final long EXPIRE_DAYS = 0;
-    public static final long EXPIRE_HOURS = 0;
-    public static final long EXPIRE_MINUTES = 30;
+    public static final long EXPIRE_HOURS = 10;
+    public static final long EXPIRE_MINUTES = 0;
 
     private static Date toExpireDate(Date start) {
         LocalDateTime dateTime = start.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();

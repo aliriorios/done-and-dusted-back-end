@@ -46,4 +46,9 @@ public class TaskService {
     public void delete(Long id) {
         taskRepository.delete(findById(id));
     }
+
+    @Transactional
+    public void deleteAllTasks() {
+        taskRepository.deleteAllTasks();
+    }
 }
