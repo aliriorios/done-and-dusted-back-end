@@ -16,12 +16,6 @@ public class TaskMapper {
     }
 
     public static TaskResponseDto toResponseDto(Task task) {
-        TaskResponseDto responseDto = mapper.map(task, TaskResponseDto.class);
-
-        if (task.getClient() != null) {
-            responseDto.setClient(ClientMapper.toResponseDto(task.getClient()));
-        }
-
-        return responseDto;
+        return mapper.map(task, TaskResponseDto.class);
     }
 }
