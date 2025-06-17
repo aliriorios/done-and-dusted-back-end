@@ -2,6 +2,7 @@ package br.com.aliriorios.done_and_dusted.service;
 
 import br.com.aliriorios.done_and_dusted.entity.Client;
 import br.com.aliriorios.done_and_dusted.entity.Task;
+import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.repository.TaskRepository;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.TaskMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
@@ -30,5 +31,19 @@ public class TaskService {
         task.setDueDate(dueDate);
 
         return taskRepository.save(task);
+    }
+
+    // GET ------------------------------------------------
+    @Transactional(readOnly = true)
+    public Task findById (Long id) {
+        return taskRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Task [id=%s] not founded", id))
+        );
+    }
+
+    // DELETE ---------------------------------------------
+    @Transactional
+    public void delete(Long id) {
+        taskRepository.delete(findById(id));
     }
 }

@@ -14,12 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.time.LocalDate;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/api/v1/tasks")
@@ -40,10 +35,24 @@ public class TaskController {
     }
 
     // GET ------------------------------------------------
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<TaskResponseDto> findById(@PathVariable Long id) {
+        Task task = taskService.findById(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(TaskMapper.toResponseDto(task));
+    }
 
     // PUT ------------------------------------------------
 
     // PATCH ----------------------------------------------
 
     // DELETE ---------------------------------------------
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        taskService.delete(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 }
