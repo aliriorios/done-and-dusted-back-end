@@ -11,6 +11,8 @@ import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.spi.MappingContext;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
     private static final ModelMapper mapper = new ModelMapper();

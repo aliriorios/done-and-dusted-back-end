@@ -8,9 +8,12 @@ import br.com.aliriorios.done_and_dusted.repository.ClientRepository;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientUpdateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.ClientMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -41,9 +44,12 @@ public class ClientService {
     // PATCH ----------------------------------------------
     @Transactional
     public void updateProfile(Long id, ClientUpdateDto updateDto) {
+        LocalDate newBirthday = LocalDate.parse(updateDto.getBirthday());
+
         try {
             Client client = findByUserId(id);
-            ClientMapper.updateFromDto(client, updateDto); // JPA identify modification
+            ClientMapper.updateFromDto(client, updateDto);
+            client.setBirthday(newBirthday);
 
         } catch (DataIntegrityViolationException e) {
             String message = e.getRootCause() != null ? e.getRootCause().getMessage() : "";

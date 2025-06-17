@@ -52,6 +52,12 @@ public class UserService {
 
     // PATCH ----------------------------------------------
     @Transactional
+    public void updateUsername(Long id, String newUsername) {
+        User user = findById(id);
+        user.setUsername(newUsername);
+    }
+
+    @Transactional
     public void updatePassword(Long id, String currentPassword, String newPassword, String confirmPassword) {
         if (!newPassword.equals(confirmPassword)) {
             throw new PasswordInvalidException("New password does not match password confirmation.");

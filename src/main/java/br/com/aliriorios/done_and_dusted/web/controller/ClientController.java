@@ -3,6 +3,7 @@ package br.com.aliriorios.done_and_dusted.web.controller;
 import br.com.aliriorios.done_and_dusted.entity.Client;
 import br.com.aliriorios.done_and_dusted.jwt.JwtUserDetails;
 import br.com.aliriorios.done_and_dusted.service.ClientService;
+import br.com.aliriorios.done_and_dusted.service.UserService;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientUpdateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.ClientMapper;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @EnableMethodSecurity
 public class ClientController {
     private final ClientService clientService;
+    private final UserService userService;
 
     // GET ------------------------------------------------
     @GetMapping(value = "/{id}")
@@ -74,19 +76,21 @@ public class ClientController {
     // PATCH ----------------------------------------------
     @PatchMapping(value = "/update-profile")
     @Operation(
-            summary = "Update client data", description = "Feature to update all client data - Requisition requires a Bearer Token - Restricted access to CLIENT",
+            summary = "Update client data", description = "Feature to update all client data and username (from User) - Requisition requires a Bearer Token - Restricted access to CLIENT",
             security = @SecurityRequirement(name = "Security"),
             responses = {
                     @ApiResponse(responseCode = "204", description = "Update profile successfully"),
                     @ApiResponse(responseCode = "400", description = "Missing or formatted update dto", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "401", description = "Unauthorized user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "403", description = "User without permission to access this feature", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "404", description = "Client not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "404", description = "User/Client not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             }
     )
     @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> updateProfile (@AuthenticationPrincipal JwtUserDetails userDetails, @Valid @RequestBody ClientUpdateDto updateDto) {
+        userService.updateUsername(userDetails.getId(), updateDto.getNewUsername());
+
         clientService.updateProfile(userDetails.getId(), updateDto);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
