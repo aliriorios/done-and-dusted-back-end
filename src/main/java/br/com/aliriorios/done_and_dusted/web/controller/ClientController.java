@@ -73,6 +73,19 @@ public class ClientController {
 
     // PATCH ----------------------------------------------
     @PatchMapping(value = "/update-profile")
+    @Operation(
+            summary = "Update client data", description = "Feature to update all client data - Requisition requires a Bearer Token - Restricted access to CLIENT",
+            security = @SecurityRequirement(name = "Security"),
+            responses = {
+                    @ApiResponse(responseCode = "204", description = "Update profile successfully"),
+                    @ApiResponse(responseCode = "400", description = "Missing or formatted update dto", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized user", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "403", description = "User without permission to access this feature", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "404", description = "Client not found", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+            }
+    )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> updateProfile (@AuthenticationPrincipal JwtUserDetails userDetails, @Valid @RequestBody ClientUpdateDto updateDto) {
         clientService.updateProfile(userDetails.getId(), updateDto);
         return ResponseEntity
