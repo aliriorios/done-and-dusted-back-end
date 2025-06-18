@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDate;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
     private static final ModelMapper mapper = new ModelMapper();
@@ -32,6 +34,8 @@ public class ClientMapper {
         if (updateDto.getCpf().isEmpty()) {
             updateDto.setCpf(client.getCpf());
         }
+
+        client.setBirthday(LocalDate.parse(updateDto.getBirthday()));
 
         mapper.map(updateDto, client);
     }

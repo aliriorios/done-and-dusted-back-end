@@ -8,6 +8,7 @@ import br.com.aliriorios.done_and_dusted.service.TaskService;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.TaskMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskResponseDto;
+import br.com.aliriorios.done_and_dusted.web.dto.task.TaskUpdateDto;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -56,6 +57,13 @@ public class TaskController {
     }
 
     // PATCH ----------------------------------------------
+    @PatchMapping(value = "/{id}")
+    public ResponseEntity<Task> update (@PathVariable Long id, @Valid @RequestBody TaskUpdateDto updateDto) {
+        taskService.updateTask(id, updateDto);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
 
     // DELETE ---------------------------------------------
     @DeleteMapping(value = "/{id}")

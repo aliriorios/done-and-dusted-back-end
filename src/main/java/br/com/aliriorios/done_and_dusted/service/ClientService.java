@@ -49,9 +49,6 @@ public class ClientService {
             Client client = findByUserId(id);
             ClientMapper.updateFromDto(client, updateDto);
 
-            LocalDate newBirthday = LocalDate.parse(updateDto.getBirthday());
-            client.setBirthday(newBirthday);
-
         } catch (DataIntegrityViolationException e) {
             String message = e.getRootCause() != null ? e.getRootCause().getMessage() : "";
 

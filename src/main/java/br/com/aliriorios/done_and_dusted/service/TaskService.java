@@ -6,6 +6,7 @@ import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.repository.TaskRepository;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.TaskMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
+import br.com.aliriorios.done_and_dusted.web.dto.task.TaskUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +40,13 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Task [id=%s] not founded", id))
         );
+    }
+
+    // PATCH ----------------------------------------------
+    @Transactional
+    public void updateTask(Long id, TaskUpdateDto updateDto) {
+        Task task = findById(id);
+        TaskMapper.updateFromDto(task, updateDto);
     }
 
     // DELETE ---------------------------------------------
