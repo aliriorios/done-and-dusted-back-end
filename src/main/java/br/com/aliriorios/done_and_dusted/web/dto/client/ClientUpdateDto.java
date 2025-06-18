@@ -11,7 +11,7 @@ public class ClientUpdateDto {
     private String name;
 
     @Pattern(
-            regexp = "^\\d{4}-\\d{2}-\\d{2}$",
+            regexp = "^(|\\d{4}-\\d{2}-\\d{2}$)",
             message = "Date format needs to be: yyyy-MM-dd"
     )
     private String birthday;
@@ -39,6 +39,4 @@ public class ClientUpdateDto {
     @NotBlank
     @Email(regexp = "^[A-Za-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,}$", message = "E-mail format is invalid.")
     private String newUsername;
-
-    // IMPLEMENTAR UMA FORMA DE NÃO SUBSTITUIR OS DADOS DO BANCO CASO VENHA "" NO DTO
 }

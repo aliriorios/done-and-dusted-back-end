@@ -6,41 +6,33 @@ import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientUpdateDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.modelmapper.Conditions;
-import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.spi.MappingContext;
-
-import java.time.LocalDate;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ClientMapper {
     private static final ModelMapper mapper = new ModelMapper();
-
-    // Conditions to only change the data in the database if they are passed in the DTO
-    static {
-        // Avoids overwriting existing data with NULL
-        mapper.getConfiguration().setPropertyCondition(Conditions.isNotNull());
-
-        // Converts "" fields to NULL
-        Converter<String, String> emptyStringToNull = new Converter<String, String>() {
-            @Override
-            public String convert(MappingContext<String, String> context) {
-                String source = context.getSource();
-                if (source == null || source.trim().isEmpty()) {
-                    return null;
-                }
-                return source;
-            }
-        };
-        mapper.addConverter(emptyStringToNull);
-    }
 
     public static Client toClient(RegisterDto createDto) {
         return mapper.map(createDto, Client.class);
     }
 
     public static void updateFromDto(Client client, ClientUpdateDto updateDto) {
+        if (updateDto.getBirthday().isEmpty()) {
+            updateDto.setBirthday(client.getBirthday().toString());
+        }
+
+        if (updateDto.getPhone().isEmpty()) {
+            updateDto.setPhone(client.getPhone());
+        }
+
+        if (updateDto.getRg().isEmpty()) {
+            updateDto.setRg(client.getRg());
+        }
+
+        if (updateDto.getCpf().isEmpty()) {
+            updateDto.setCpf(client.getCpf());
+        }
+
         mapper.map(updateDto, client);
     }
 

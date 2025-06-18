@@ -44,11 +44,12 @@ public class ClientService {
     // PATCH ----------------------------------------------
     @Transactional
     public void updateProfile(Long id, ClientUpdateDto updateDto) {
-        LocalDate newBirthday = LocalDate.parse(updateDto.getBirthday());
 
         try {
             Client client = findByUserId(id);
             ClientMapper.updateFromDto(client, updateDto);
+
+            LocalDate newBirthday = LocalDate.parse(updateDto.getBirthday());
             client.setBirthday(newBirthday);
 
         } catch (DataIntegrityViolationException e) {
