@@ -2,6 +2,7 @@ package br.com.aliriorios.done_and_dusted.service;
 
 import br.com.aliriorios.done_and_dusted.entity.Client;
 import br.com.aliriorios.done_and_dusted.entity.Task;
+import br.com.aliriorios.done_and_dusted.entity.enums.TaskStatus;
 import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.repository.TaskRepository;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.TaskMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +49,27 @@ public class TaskService {
     public void updateTask(Long id, TaskUpdateDto updateDto) {
         Task task = findById(id);
         TaskMapper.updateFromDto(task, updateDto);
+    }
+
+    @Transactional
+    public Task taskUpdateStatusCompleted(Long id) {
+        Task task = findById(id);
+        task.setStatus(TaskStatus.COMPLETED);
+        return task;
+    }
+
+    @Transactional
+    private void taskUpdateStatus(Task task) { // CALLING ON FIND ALL
+        LocalDate today = LocalDate.now();
+        long daysLeft = ChronoUnit.DAYS.between(today, task.getDueDate());
+
+        if (daysLeft <= 5) {
+            task.setStatus(TaskStatus.DUE_SOON);
+        }
+
+        if (task.getDueDate().isBefore(today)) {
+            task.setStatus(TaskStatus.OVERDUE);
+        }
     }
 
     // DELETE ---------------------------------------------

@@ -1,7 +1,6 @@
 package br.com.aliriorios.done_and_dusted.web.dto.task;
 
 import br.com.aliriorios.done_and_dusted.entity.enums.TaskStatus;
-import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 

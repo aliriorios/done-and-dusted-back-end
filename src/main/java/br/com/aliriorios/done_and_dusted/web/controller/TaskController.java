@@ -2,6 +2,7 @@ package br.com.aliriorios.done_and_dusted.web.controller;
 
 import br.com.aliriorios.done_and_dusted.entity.Client;
 import br.com.aliriorios.done_and_dusted.entity.Task;
+import br.com.aliriorios.done_and_dusted.entity.enums.TaskStatus;
 import br.com.aliriorios.done_and_dusted.jwt.JwtUserDetails;
 import br.com.aliriorios.done_and_dusted.service.ClientService;
 import br.com.aliriorios.done_and_dusted.service.TaskService;
@@ -58,11 +59,19 @@ public class TaskController {
 
     // PATCH ----------------------------------------------
     @PatchMapping(value = "/{id}")
-    public ResponseEntity<Task> update (@PathVariable Long id, @Valid @RequestBody TaskUpdateDto updateDto) {
+    public ResponseEntity<Void> update (@PathVariable Long id, @Valid @RequestBody TaskUpdateDto updateDto) {
         taskService.updateTask(id, updateDto);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+
+    @PatchMapping(value = "/update-status-completed/{id}")
+    public ResponseEntity<TaskResponseDto> taskUpdateStatusCompleted (@PathVariable Long id) {
+        Task task = taskService.taskUpdateStatusCompleted(id);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(TaskMapper.toResponseDto(task));
     }
 
     // DELETE ---------------------------------------------
