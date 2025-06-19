@@ -5,7 +5,6 @@ import br.com.aliriorios.done_and_dusted.entity.Task;
 import br.com.aliriorios.done_and_dusted.entity.enums.TaskStatus;
 import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.repository.TaskRepository;
-import br.com.aliriorios.done_and_dusted.repository.projection.TaskProjection;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.TaskMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskResponseDto;
@@ -13,6 +12,7 @@ import br.com.aliriorios.done_and_dusted.web.dto.task.TaskUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,18 +41,22 @@ public class TaskService {
     }
 
     // GET ------------------------------------------------
-    @Transactional(readOnly = true)
-    public Task findById (Long id) {
-        return taskRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Task [id=%s] not founded", id))
+    @Transactional
+    public Task findByIdAndClientId (Long clientId, Long taskId) {
+        return taskRepository.findByIdAndClientId(clientId, taskId).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Task [id=%s] not found for Client [id%s]", taskId, clientId))
         );
     }
 
     @Transactional
-    public Page<TaskResponseDto> findAll (Pageable pageable) {
-        Page<Task> taskList = taskRepository.findAllPageable(pageable);
+    public Page<TaskResponseDto> findAll (Long clientId, Pageable pageable) {
+        Page<Task> taskList = taskRepository.findAllPageable(clientId, pageable);
 
         for (Task t : taskList) {
+            if (!t.getClient().getId().equals(clientId)) {
+                throw new AccessDeniedException("Access denied! This task does not belong to that user|client");
+            }
+
             taskUpdateStatus(t);
         }
 
@@ -61,14 +65,14 @@ public class TaskService {
 
     // PATCH ----------------------------------------------
     @Transactional
-    public void updateTask(Long id, TaskUpdateDto updateDto) {
-        Task task = findById(id);
+    public void updateTask(Long clientId, Long taskId, TaskUpdateDto updateDto) {
+        Task task = findByIdAndClientId(taskId, clientId);
         TaskMapper.updateFromDto(task, updateDto);
     }
 
     @Transactional
-    public Task taskUpdateStatusCompleted(Long id) {
-        Task task = findById(id);
+    public Task taskUpdateStatusCompleted(Long clientId, Long taskId) {
+        Task task = findByIdAndClientId(clientId, taskId);
         task.setStatus(TaskStatus.COMPLETED);
         return task;
     }
@@ -89,8 +93,8 @@ public class TaskService {
 
     // DELETE ---------------------------------------------
     @Transactional
-    public void delete(Long id) {
-        taskRepository.delete(findById(id));
+    public void delete(Long clientId, Long taskId) {
+        taskRepository.delete(findByIdAndClientId(clientId, taskId));
     }
 
     @Transactional

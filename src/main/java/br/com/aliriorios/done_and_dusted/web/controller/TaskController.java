@@ -54,43 +54,43 @@ public class TaskController {
     }
 
     // GET ------------------------------------------------
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<TaskResponseDto> findById(@PathVariable Long id) {
-        Task task = taskService.findById(id);
+    @GetMapping(value = "/{taskId}")
+    public ResponseEntity<TaskResponseDto> findByClientId(@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId) {
+        Task task = taskService.findByIdAndClientId(clientService.findByUserId(userDetails.getId()).getId(), taskId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(TaskMapper.toResponseDto(task));
     }
 
     @GetMapping(value = "/findAll")
-    public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable) {
-        Page<TaskResponseDto> taskList = taskService.findAll(pageable);
+    public ResponseEntity<PageableDto> findAll(@AuthenticationPrincipal JwtUserDetails userDetails, @Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable) {
+        Page<TaskResponseDto> taskList = taskService.findAll(clientService.findByUserId(userDetails.getId()).getId(), pageable);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(PageableMapper.toPageableDto(taskList));
     }
 
     // PATCH ----------------------------------------------
-    @PatchMapping(value = "/{id}")
-    public ResponseEntity<Void> update (@PathVariable Long id, @Valid @RequestBody TaskUpdateDto updateDto) {
-        taskService.updateTask(id, updateDto);
+    @PatchMapping(value = "/{taskId}")
+    public ResponseEntity<Void> update (@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId, @Valid @RequestBody TaskUpdateDto updateDto) {
+        taskService.updateTask(clientService.findById(userDetails.getId()).getId(), taskId, updateDto);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
     }
 
     @PatchMapping(value = "/update-status-completed/{id}")
-    public ResponseEntity<TaskResponseDto> taskUpdateStatusCompleted (@PathVariable Long id) {
-        Task task = taskService.taskUpdateStatusCompleted(id);
+    public ResponseEntity<TaskResponseDto> taskUpdateStatusCompleted (@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId) {
+        Task task = taskService.taskUpdateStatusCompleted(clientService.findById(userDetails.getId()).getId(), taskId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(TaskMapper.toResponseDto(task));
     }
 
     // DELETE ---------------------------------------------
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        taskService.delete(id);
+    @DeleteMapping(value = "/{taskId}")
+    public ResponseEntity<Void> delete(@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId) {
+        taskService.delete(clientService.findById(userDetails.getId()).getId(), taskId);
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
