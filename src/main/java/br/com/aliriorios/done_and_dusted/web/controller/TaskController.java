@@ -2,9 +2,7 @@ package br.com.aliriorios.done_and_dusted.web.controller;
 
 import br.com.aliriorios.done_and_dusted.entity.Client;
 import br.com.aliriorios.done_and_dusted.entity.Task;
-import br.com.aliriorios.done_and_dusted.entity.enums.TaskStatus;
 import br.com.aliriorios.done_and_dusted.jwt.JwtUserDetails;
-import br.com.aliriorios.done_and_dusted.repository.projection.TaskProjection;
 import br.com.aliriorios.done_and_dusted.service.ClientService;
 import br.com.aliriorios.done_and_dusted.service.TaskService;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.PageableMapper;
