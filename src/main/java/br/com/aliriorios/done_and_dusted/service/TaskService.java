@@ -5,10 +5,14 @@ import br.com.aliriorios.done_and_dusted.entity.Task;
 import br.com.aliriorios.done_and_dusted.entity.enums.TaskStatus;
 import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.repository.TaskRepository;
+import br.com.aliriorios.done_and_dusted.repository.projection.TaskProjection;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.TaskMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
+import br.com.aliriorios.done_and_dusted.web.dto.task.TaskResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskUpdateDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +46,17 @@ public class TaskService {
         return taskRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Task [id=%s] not founded", id))
         );
+    }
+
+    @Transactional
+    public Page<TaskResponseDto> findAll (Pageable pageable) {
+        Page<Task> taskList = taskRepository.findAllPageable(pageable);
+
+        for (Task t : taskList) {
+            taskUpdateStatus(t);
+        }
+
+        return TaskMapper.toPageResponseDto(taskList);
     }
 
     // PATCH ----------------------------------------------

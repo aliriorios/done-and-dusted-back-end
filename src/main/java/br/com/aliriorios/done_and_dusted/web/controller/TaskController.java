@@ -4,14 +4,21 @@ import br.com.aliriorios.done_and_dusted.entity.Client;
 import br.com.aliriorios.done_and_dusted.entity.Task;
 import br.com.aliriorios.done_and_dusted.entity.enums.TaskStatus;
 import br.com.aliriorios.done_and_dusted.jwt.JwtUserDetails;
+import br.com.aliriorios.done_and_dusted.repository.projection.TaskProjection;
 import br.com.aliriorios.done_and_dusted.service.ClientService;
 import br.com.aliriorios.done_and_dusted.service.TaskService;
+import br.com.aliriorios.done_and_dusted.web.dto.mapper.PageableMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.TaskMapper;
+import br.com.aliriorios.done_and_dusted.web.dto.pageable.PageableDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskUpdateDto;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -55,6 +62,14 @@ public class TaskController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(TaskMapper.toResponseDto(task));
+    }
+
+    @GetMapping(value = "/findAll")
+    public ResponseEntity<PageableDto> findAll(@Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable) {
+        Page<TaskResponseDto> taskList = taskService.findAll(pageable);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(PageableMapper.toPageableDto(taskList));
     }
 
     // PATCH ----------------------------------------------

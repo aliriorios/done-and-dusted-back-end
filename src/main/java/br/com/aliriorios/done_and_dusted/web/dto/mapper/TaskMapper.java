@@ -7,6 +7,7 @@ import br.com.aliriorios.done_and_dusted.web.dto.task.TaskUpdateDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 
@@ -20,6 +21,12 @@ public class TaskMapper {
 
     public static TaskResponseDto toResponseDto(Task task) {
         return mapper.map(task, TaskResponseDto.class);
+    }
+
+    public static Page<TaskResponseDto> toPageResponseDto(Page<Task> taskList) {
+        return taskList.map(task ->
+                mapper.map(task, TaskResponseDto.class)
+        );
     }
 
     public static void updateFromDto(Task task, TaskUpdateDto updateDto) {
