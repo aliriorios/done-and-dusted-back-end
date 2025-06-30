@@ -43,9 +43,13 @@ public class TaskService {
     // GET ------------------------------------------------
     @Transactional
     public Task findByIdAndClientId (Long clientId, Long taskId) {
-        return taskRepository.findByIdAndClientId(clientId, taskId).orElseThrow(
+        Task task = taskRepository.findByIdAndClientId(clientId, taskId).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Task [id=%s] not found for Client [id%s]", taskId, clientId))
         );
+
+        taskUpdateStatus(task);
+
+        return task;
     }
 
     @Transactional
@@ -82,12 +86,14 @@ public class TaskService {
         LocalDate today = LocalDate.now();
         long daysLeft = ChronoUnit.DAYS.between(today, task.getDueDate());
 
-        if (daysLeft <= 5) {
-            task.setStatus(TaskStatus.DUE_SOON);
-        }
+        if (task.getStatus() != TaskStatus.COMPLETED) {
+            if (daysLeft <= 5) {
+                task.setStatus(TaskStatus.DUE_SOON);
+            }
 
-        if (task.getDueDate().isBefore(today)) {
-            task.setStatus(TaskStatus.OVERDUE);
+            if (task.getDueDate().isBefore(today)) {
+                task.setStatus(TaskStatus.OVERDUE);
+            }
         }
     }
 
