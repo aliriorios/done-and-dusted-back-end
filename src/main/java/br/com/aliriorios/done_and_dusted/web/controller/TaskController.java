@@ -27,6 +27,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<TaskResponseDto> save(@AuthenticationPrincipal JwtUserDetails userDetails, @Valid @RequestBody TaskCreateDto createDto) {
         Client client = clientService.findByUserId(userDetails.getId());
         Task task = taskService.save(client, createDto);
@@ -88,6 +90,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<TaskResponseDto> findByClientId(@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId) {
         Task task = taskService.findByIdAndClientId(clientService.findByUserId(userDetails.getId()).getId(), taskId);
         return ResponseEntity
@@ -110,6 +113,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<PageableDto> findAll(@AuthenticationPrincipal JwtUserDetails userDetails, @Parameter(hidden = true) @PageableDefault(size = 10) Pageable pageable) {
         Page<TaskResponseDto> taskList = taskService.findAll(clientService.findByUserId(userDetails.getId()).getId(), pageable);
         return ResponseEntity
@@ -131,6 +135,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> update (@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId, @Valid @RequestBody TaskUpdateDto updateDto) {
         taskService.updateTask(clientService.findById(userDetails.getId()).getId(), taskId, updateDto);
         return ResponseEntity
@@ -150,6 +155,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<TaskResponseDto> taskUpdateStatusCompleted (@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId) {
         Task task = taskService.taskUpdateStatusCompleted(clientService.findById(userDetails.getId()).getId(), taskId);
         return ResponseEntity
@@ -170,6 +176,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> delete(@AuthenticationPrincipal JwtUserDetails userDetails, @PathVariable Long taskId) {
         taskService.delete(clientService.findById(userDetails.getId()).getId(), taskId);
         return ResponseEntity
@@ -188,6 +195,7 @@ public class TaskController {
                     @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
             }
     )
+    @PreAuthorize("hasRole('CLIENT')")
     public ResponseEntity<Void> deleteAllTasks() {
         taskService.deleteAllTasks();
         return ResponseEntity
