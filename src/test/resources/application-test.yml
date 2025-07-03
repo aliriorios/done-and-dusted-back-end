@@ -1,0 +1,17 @@
+# Test Database Config
+spring:
+  profile:
+    active: test
+  datasource:
+    url: jdbc:mysql://localhost:3306/done-and-dusted-db?useSSL=false&allowPublicKeyRetrieval=true
+    username: alirio-dev
+    password: dev
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect

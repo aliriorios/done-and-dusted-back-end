@@ -99,9 +99,13 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- Test Webflux -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
 
 		<!-- ### DEPENDENCIES TO ADD ### -->
-		<!-- Test Webflux -->
 		<!-- Jasper Reports -->
 
 		<dependency>
