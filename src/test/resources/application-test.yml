@@ -3,7 +3,7 @@ spring:
   profile:
     active: test
   datasource:
-    url: jdbc:mysql://localhost:3306/done-and-dusted-db?useSSL=false&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://localhost:3306/done-and-dusted-db-test?useSSL=false&allowPublicKeyRetrieval=true
     username: alirio-dev
     password: dev
     driver-class-name: com.mysql.cj.jdbc.Driver
