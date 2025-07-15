@@ -326,4 +326,14 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 
+    @Test
+    public void delete_SuccessfullyDeleted_ReturnStatus204() {
+        // ADMIN
+        testClient
+                .delete()
+                .uri("/api/v1/users/1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(204);
+    }
 }

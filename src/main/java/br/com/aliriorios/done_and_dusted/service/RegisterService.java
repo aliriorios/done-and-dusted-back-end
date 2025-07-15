@@ -32,7 +32,7 @@ public class RegisterService {
     }
 
     public void deleteAccount (Long id) {
-        clientService.deleteById(id);
+        clientService.deleteById(clientService.findByUserId(id).getId());
         userService.deleteById(id);
     }
 }
