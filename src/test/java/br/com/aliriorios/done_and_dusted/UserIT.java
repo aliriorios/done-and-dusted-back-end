@@ -3,6 +3,7 @@ package br.com.aliriorios.done_and_dusted;
 import br.com.aliriorios.done_and_dusted.web.dto.RegisterDto;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.user.UserResponseDto;
+import br.com.aliriorios.done_and_dusted.web.dto.user.UserUpdatePasswordDto;
 import br.com.aliriorios.done_and_dusted.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -193,4 +194,136 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
     }
+
+    @Test
+    public void updatePassword_SuccessfullyUpdated_ReturnStatus204() {
+        // ADMIN
+        testClient
+                .patch()
+                .uri("/api/v1/users/update-password/1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("123456", "123456", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(204);
+
+        // CLIENT
+        testClient
+                .patch()
+                .uri("/api/v1/users/update-password/2")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("123456", "123456", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(204);
+    }
+
+    @Test
+    public void updatePassword_WrongOrEmptyPassword_ReturnErrorMessageWithStatus400() {
+        // Unmatched current password
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/users/update-password/1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("000000", "123456", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+        responseBody = testClient
+                .patch()
+                .uri("/api/v1/users/update-password/1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("", "123456", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+        // Unmatched confirm password
+        responseBody = testClient
+                .patch()
+                .uri("/api/v1/users/update-password/1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("123456", "123456", "000000"))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+        responseBody = testClient
+                .patch()
+                .uri("/api/v1/users/update-password/1")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("123456", "123456", ""))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    public void updatePassword_UnauthorizedUser_ReturnErrorMessageWithStatus401() {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/users/update-password/2")
+                .exchange()
+                .expectStatus().isEqualTo(401)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void updatePassword_ForbiddenUserOwnId_ReturnErrorMessageWithStatus403() {
+        // ADMIN
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/users/update-password/5")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456")) // admin id == 1
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("123456", "123456", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+
+        // CLIENT
+        responseBody = testClient
+                .patch()
+                .uri("/api/v1/users/update-password/5")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "julia@email.com", "123456")) // julia id == 10
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new UserUpdatePasswordDto("123456", "123456", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
 }
