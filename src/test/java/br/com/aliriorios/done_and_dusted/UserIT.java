@@ -116,4 +116,51 @@ public class UserIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(409);
     }
+
+    @Test
+    public void findById_SuccessfullyTest_ReturnUserWithStatus200() {
+        // ADMIN can find any user
+        UserResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v1/users/10")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody(UserResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getUsername()).isEqualTo("julia@email.com");
+        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CLIENT");
+
+        // CLIENT can find only own user
+        responseBody = testClient
+                .get()
+                .uri("/api/v1/users/10")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "julia@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody(UserResponseDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getUsername()).isEqualTo("julia@email.com");
+        org.assertj.core.api.Assertions.assertThat(responseBody.getRole()).isEqualTo("CLIENT");
+    }
+
+    @Test
+    public void findById_UnauthorizedUser_ReturnErrorMessageWithStatus401() {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/users/10")
+                .exchange()
+                .expectStatus().isEqualTo(401)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(401);
+    }
 }
