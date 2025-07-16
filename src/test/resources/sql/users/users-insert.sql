@@ -10,14 +10,14 @@ INSERT INTO users (id, username, password, role) VALUES
 (9, 'ivan@email.com', '$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO', 'ROLE_CLIENT'),
 (10, 'julia@email.com', '$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO', 'ROLE_CLIENT');
 
-INSERT INTO clients (id, name, user_id) VALUES
-(1, 'Admin', 1),
-(2, 'Bob', 2),
-(3, 'Charlie', 3),
-(4, 'Diana', 4),
-(5, 'Edward', 5),
-(6, 'Fiona', 6),
-(7, 'George', 7),
-(8, 'Hannah', 8),
-(9, 'Ivan', 9),
-(10, 'Julia', 10);
+INSERT INTO clients (id, birthday, cpf, phone, rg, name, user_id) VALUES
+(1, '2000-01-01', 11111111111, 11111111111, 111111111, 'Admin', 1),
+(2, '2000-02-02', 22222222222, 222222222, 222222222, 'Bob', 2),
+(3, '2000-03-03', 33333333333, 33333333333, 333333333, 'Charlie', 3),
+(4, '2000-04-04', 44444444444, 44444444444, 444444444, 'Diana', 4),
+(5, '2000-05-05', 55555555555, 55555555555, 555555555, 'Edward', 5),
+(6, '2000-06-06', 66666666666, 66666666666, 666666666, 'Fiona', 6),
+(7, '2000-07-07', 77777777777, 77777777777, 777777777, 'George', 7),
+(8, '2000-08-08', 88888888888, 88888888888, 888888888, 'Hannah', 8),
+(9, '2000-09-09', 99999999999, 99999999999, 999999999, 'Ivan', 9),
+(10, '2000-10-10', 12345678911, 71999668922, 123456789, 'Julia', 10);

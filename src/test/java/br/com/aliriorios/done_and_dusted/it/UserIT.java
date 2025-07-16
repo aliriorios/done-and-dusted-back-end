@@ -1,5 +1,6 @@
-package br.com.aliriorios.done_and_dusted;
+package br.com.aliriorios.done_and_dusted.it;
 
+import br.com.aliriorios.done_and_dusted.JwtAuthentication;
 import br.com.aliriorios.done_and_dusted.web.dto.RegisterDto;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientResponseDto;
 import br.com.aliriorios.done_and_dusted.web.dto.user.UserResponseDto;
