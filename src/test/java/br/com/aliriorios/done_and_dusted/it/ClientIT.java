@@ -308,6 +308,8 @@ public class ClientIT {
         ErrorMessage responseBody = testClient
                 .patch()
                 .uri("/api/v1/clients/update-profile")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new ClientUpdateDto("Edward", "2005-05-05", "74999555555", "545454545", "54545454545", "newEdward@email.com"))
                 .exchange()
                 .expectStatus().isEqualTo(401)
                 .expectBody(ErrorMessage.class)
@@ -317,5 +319,20 @@ public class ClientIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(401);
     }
 
+    @Test
+    public void updateProfile_ForbiddenUser_ReturnErrorMessageWithStatus403() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/clients/update-profile")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new ClientUpdateDto("Edward", "2005-05-05", "74999555555", "545454545", "54545454545", "newEdward@email.com"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
 
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
 }
