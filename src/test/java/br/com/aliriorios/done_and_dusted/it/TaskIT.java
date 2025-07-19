@@ -4,6 +4,7 @@ import br.com.aliriorios.done_and_dusted.JwtAuthentication;
 import br.com.aliriorios.done_and_dusted.web.dto.pageable.PageableDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskResponseDto;
+import br.com.aliriorios.done_and_dusted.web.dto.task.TaskUpdateDto;
 import br.com.aliriorios.done_and_dusted.web.exception.ErrorMessage;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -265,5 +266,133 @@ public class TaskIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
+    @Test
+    public void update_SuccessfullyUpdateTask_ReturnStatus204() {
+        // Bob (client_id=2) task_id<=5
+        testClient
+                .patch()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskUpdateDto("New Task 3 Name", "New task 3 description", "2030-01-01"))
+                .exchange()
+                .expectStatus().isEqualTo(204);
+    }
+
+    @Test
+    public void update_InvalidNameValidation_ReturnErrorMessageWithStatus400() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskCreateDto("", "Task 3 Test Description", "2030-01-01"))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    public void update_InvalidDueDateValidation_ReturnErrorMessageWithStatus400() {
+        // Not blank
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskCreateDto("New Task 3 Name", "Task 3 Test Description", ""))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+        // Date is before than today
+        responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskCreateDto("New Task 3 Name", "Task 3 Test Description", "2020-01-01"))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+
+        // Date invalid format
+        responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskCreateDto("New Task 3 Name", "Task 3 Test Description", "2030-01"))
+                .exchange()
+                .expectStatus().isEqualTo(400)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(400);
+    }
+
+    @Test
+    public void update_UnauthorizedUser_ReturnErrorMessageWithStatus401() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/3")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskUpdateDto("New Task 3 Name", "New task 3 description", "2030-01-01"))
+                .exchange()
+                .expectStatus().isEqualTo(401)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void update_ForbiddenUser_ReturnErrorMessageWithStatus403() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskUpdateDto("New Task 3 Name", "New task 3 description", "2030-01-01"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
+    @Test
+    public void update_TaskNotFound_ReturnErrorMessageWithStatus404() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(new TaskUpdateDto("New Task 100 Name", "New task 100 description", "2030-01-01"))
+                .exchange()
+                .expectStatus().isEqualTo(404)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
     }
 }

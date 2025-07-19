@@ -44,7 +44,7 @@ public class TaskService {
     @Transactional
     public Task findByIdAndClientId (Long clientId, Long taskId) {
         Task task = taskRepository.findByIdAndClientId(clientId, taskId).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Task [id=%s] not found for Client [id%s]", taskId, clientId))
+                () -> new EntityNotFoundException(String.format("Task [id=%s] not found for Client [id=%s]", taskId, clientId))
         );
 
         taskUpdateStatus(task);
@@ -70,7 +70,15 @@ public class TaskService {
     // PATCH ----------------------------------------------
     @Transactional
     public void updateTask(Long clientId, Long taskId, TaskUpdateDto updateDto) {
-        Task task = findByIdAndClientId(taskId, clientId);
+        LocalDate dueDate = LocalDate.parse(updateDto.getDueDate());
+
+        if (dueDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("The date of the task must be present or future");
+        }
+
+        updateDto.setDueDate(dueDate.toString());
+
+        Task task = findByIdAndClientId(clientId, taskId);
         TaskMapper.updateFromDto(task, updateDto);
     }
 
