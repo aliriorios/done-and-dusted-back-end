@@ -395,4 +395,60 @@ public class TaskIT {
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
     }
+
+    @Test
+    public void updateStatusCompleted_SuccessfullyUpdate_ReturnTaskWithStatus200() {
+        TaskResponseDto responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/update-status-completed/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody(TaskResponseDto.class)
+                .returnResult().getResponseBody();
+    }
+
+    @Test
+    public void updateStatusCompleted_UnauthorizedUser_ReturnErrorMessageWithStatus401() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/update-status-completed/3")
+                .exchange()
+                .expectStatus().isEqualTo(401)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void updateStatusCompleted_ForbiddenUser_ReturnErrorMessageWithStatus403() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/update-status-completed/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
+    @Test
+    public void updateStatusCompleted_TaskNotFound_ReturnErrorMessageWithStatus404() {
+        ErrorMessage responseBody = testClient
+                .patch()
+                .uri("/api/v1/tasks/update-status-completed/100")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(404)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
 }
