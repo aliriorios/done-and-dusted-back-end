@@ -1,6 +1,7 @@
 package br.com.aliriorios.done_and_dusted.it;
 
 import br.com.aliriorios.done_and_dusted.JwtAuthentication;
+import br.com.aliriorios.done_and_dusted.web.dto.pageable.PageableDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskCreateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.task.TaskResponseDto;
 import br.com.aliriorios.done_and_dusted.web.exception.ErrorMessage;
@@ -137,5 +138,132 @@ public class TaskIT {
         org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
     }
 
+    @Test
+    public void findByClientId_SuccessfullyFindTask_ReturnTaskWithStatus200() {
+        TaskResponseDto responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody(TaskResponseDto.class)
+                .returnResult().getResponseBody();
 
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(3);
+        org.assertj.core.api.Assertions.assertThat(responseBody.getName()).isEqualTo("Task 3");
+    }
+
+    @Test
+    public void findByClientId_UnauthorizedUser_ReturnErrorMessageWithStatus401() {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/3")
+                .exchange()
+                .expectStatus().isEqualTo(401)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void findByClientId_ForbiddenUser_ReturnErrorMessageWithStatus403() {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/3")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
+
+    @Test
+    public void findByClientId_NotFound_ReturnErrorMessageWithStatus404() {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/1000")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(404)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(404);
+    }
+
+    @Test
+    public void findAll_SuccessfullyFind_ReturnAllWithStatus200() {
+        // Default URI Pageable
+        PageableDto responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/findAll")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody(PageableDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent().size()).isEqualTo(5); // Current page elements
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(1); // 5 elements, 2 per page (size=2), 3 pages
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(0); // Number of current page
+        org.assertj.core.api.Assertions.assertThat(responseBody.getSize()).isEqualTo(10); // Number of elements per page
+
+        // Custom URI Pageable
+        responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/findAll?size=2&page=0")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "bob@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(200)
+                .expectBody(PageableDto.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getContent().size()).isEqualTo(2); // Current page elements
+        org.assertj.core.api.Assertions.assertThat(responseBody.getTotalPages()).isEqualTo(3); // 5 elements, 2 per page (size=2), 3 pages
+        org.assertj.core.api.Assertions.assertThat(responseBody.getNumber()).isEqualTo(0); // Number of current page
+        org.assertj.core.api.Assertions.assertThat(responseBody.getSize()).isEqualTo(2); // Number of elements per page
+    }
+
+    /*
+    * 400 BAD_REQUEST
+    * Pageable always ignores wrong parameters in the URI
+    * */
+
+    @Test
+    public void findAll_UnauthorizedUser_ReturnErrorMessageWithStatus401() {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/findAll")
+                .exchange()
+                .expectStatus().isEqualTo(401)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(401);
+    }
+
+    @Test
+    public void findAll_ForbiddenUser_ReturnErrorMessageWithStatus403() {
+        ErrorMessage responseBody = testClient
+                .get()
+                .uri("/api/v1/tasks/findAll")
+                .headers(JwtAuthentication.getHeaderAuthorization(testClient, "admin@email.com", "123456"))
+                .exchange()
+                .expectStatus().isEqualTo(403)
+                .expectBody(ErrorMessage.class)
+                .returnResult().getResponseBody();
+
+        org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
+        org.assertj.core.api.Assertions.assertThat(responseBody.getStatus()).isEqualTo(403);
+    }
 }
