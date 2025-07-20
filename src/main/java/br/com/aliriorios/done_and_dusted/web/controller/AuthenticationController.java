@@ -37,8 +37,8 @@ public class AuthenticationController {
             summary = "Authentication", description = "Authentication feature in the API (Login)",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Authentication done successfully, and return of a Bearer JWT Token", content = @Content(mediaType = "application/json", schema = @Schema(implementation = JwtToken.class))),
-                    @ApiResponse(responseCode = "400", description = "Invalid credentials", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
-                    @ApiResponse(responseCode = "422", description = "Invalid fields (validation)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
+                    @ApiResponse(responseCode = "400", description = "Invalid JSON or validation", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class))),
+                    @ApiResponse(responseCode = "401", description = "Unauthorized (Invalid credentials)", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorMessage.class)))
             }
     )
     public ResponseEntity<?> authenticate(@Valid @RequestBody UserLoginDto loginDto, HttpServletRequest request) {
@@ -57,7 +57,8 @@ public class AuthenticationController {
             log.warn(String.format("Bad credentials from username [%s]", loginDto.getUsername()));
         }
 
-        return ResponseEntity.badRequest()
-                .body(new ErrorMessage(request, HttpStatus.BAD_REQUEST, "Invalid credentials."));
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body(new ErrorMessage(request, HttpStatus.UNAUTHORIZED, "Invalid credentials."));
     }
 }

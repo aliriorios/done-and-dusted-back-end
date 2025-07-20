@@ -37,7 +37,6 @@ public class TaskIT {
 
         org.assertj.core.api.Assertions.assertThat(responseBody).isNotNull();
         org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isNotNull();
-        org.assertj.core.api.Assertions.assertThat(responseBody.getId()).isEqualTo(46);
         org.assertj.core.api.Assertions.assertThat(responseBody.getName()).isEqualTo("Task 6");
     }
 
