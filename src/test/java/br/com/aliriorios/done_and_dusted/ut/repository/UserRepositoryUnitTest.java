@@ -1,6 +1,7 @@
 package br.com.aliriorios.done_and_dusted.ut.repository;
 
 import br.com.aliriorios.done_and_dusted.entity.User;
+import br.com.aliriorios.done_and_dusted.entity.enums.Role;
 import br.com.aliriorios.done_and_dusted.repository.UserRepository;
 import br.com.aliriorios.done_and_dusted.web.dto.RegisterDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.UserMapper;
@@ -26,7 +27,7 @@ public class UserRepositoryUnitTest {
     UserRepository userRepository;
 
     @Test
-    @DisplayName("Must return User successfully from DB")
+    @DisplayName("Should return User successfully from DB")
     void findByUsername_Successfully() { // JPA already tests
         RegisterDto dto = new RegisterDto("bob@email.com", "$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO", "Bob Test");
         this.createUser(dto);
@@ -50,8 +51,29 @@ public class UserRepositoryUnitTest {
     }
 
     @Test
-    void findRoleByUsername() { // Contains @Query, so testing is mandatory
+    @DisplayName("Should return the user role that the username was sent")
+    void findRoleByUsername_Successfully() { // Contains @Query, so testing is mandatory
+        RegisterDto dto = new RegisterDto("bob@email.com", "$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO", "Bob Test");
+        this.createUser(dto);
 
+        // Forces persistence and synchronization to the DB
+        entityManager.flush();
+        entityManager.clear();
+
+        Role response = this.userRepository.findRoleByUsername(dto.getUsername());
+
+        assertThat(response).isNotNull();
+        assertThat(response).isEqualTo(Role.ROLE_CLIENT);
+    }
+
+    @Test
+    @DisplayName("Test failed, should not return anything or at least one not found")
+    void findRoleByUsername_Failed() {
+        RegisterDto dto = new RegisterDto("bob@email.com", "$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO", "Bob Test");
+
+        Role response = this.userRepository.findRoleByUsername(dto.getUsername());
+
+        assertThat(response).isNull();
     }
 
     /*
