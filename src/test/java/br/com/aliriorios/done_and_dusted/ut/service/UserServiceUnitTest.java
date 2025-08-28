@@ -1,6 +1,7 @@
 package br.com.aliriorios.done_and_dusted.ut.service;
 
 import br.com.aliriorios.done_and_dusted.entity.User;
+import br.com.aliriorios.done_and_dusted.entity.enums.Role;
 import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.exception.UsernameUniqueViolationException;
 import br.com.aliriorios.done_and_dusted.repository.UserRepository;
@@ -140,5 +141,56 @@ public class UserServiceUnitTest {
                 .hasMessageContaining("User [user.test@email.com] not founded");
 
         verify(userRepository, times(1)).findByUsername(any(String.class));
+    }
+
+    @Test
+    @DisplayName("Successfully test when everything is OK")
+    void findRoleByUsername_Successfully() {
+        User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "123456", "User Test"));
+        user.setId(1L);
+        user.setRole(Role.ROLE_CLIENT);
+
+        when(userRepository.findRoleByUsername(any(String.class))).thenReturn(Role.ROLE_CLIENT);
+
+        Role responseBody = userService.findRoleByUsername(user.getUsername());
+
+        assertThat(responseBody).isNotNull();
+        verify(userRepository, times(1)).findRoleByUsername(any(String.class));
+    }
+
+    @Test
+    @DisplayName("Successfully test when everything is OK")
+    void updateUsername() {
+        Long id = 1L;
+        String newUsername = "New User Test";
+
+        User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "123456", "User Test"));
+        user.setId(id);
+
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+
+        userService.updateUsername(id, newUsername);
+
+        assertThat(user.getUsername()).isEqualTo(newUsername);
+        verify(userRepository, times(1)).findById(any(Long.class));
+    }
+
+    @Test
+    @DisplayName("Test failed, throw exception when the user not found")
+    void updateUsername_Failed_UserIdNotFound() {
+        Long id = 1L;
+        String newUsername = "New User Test";
+
+        User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "123456", "User Test"));
+        user.setId(id);
+
+        when(userRepository.findById(any(Long.class)))
+                .thenThrow(new EntityNotFoundException(String.format("User [id=%s] not founded.", user.getId())));
+
+        assertThatThrownBy(() -> userService.findById(user.getId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("User [id=1] not founded.");
+
+        verify(userRepository,times(1)).findById(any(Long.class));
     }
 }
