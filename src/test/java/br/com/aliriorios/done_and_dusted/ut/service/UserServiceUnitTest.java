@@ -37,11 +37,14 @@ public class UserServiceUnitTest {
     @Test
     @DisplayName("Test performed successfully when everything is OK")
     void save_Successfully() {
+        // Arrange
         RegisterDto createDto = new RegisterDto("user.test@email.com", "123456", "User Test");
         User user = UserMapper.toUser(createDto);
 
+        // Mock encode
         when(passwordEncoder.encode(user.getPassword())).thenReturn("$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO");
 
+        // Mock save
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> {
             // Simulating JPA behavior (@Id @GeneratedValue)
             User u = invocation.getArgument(0);
@@ -49,8 +52,10 @@ public class UserServiceUnitTest {
             return u;
         });
 
+        // Act
         User responseBody = userService.save(user);
 
+        // Assert
         assertThat(responseBody).isNotNull();
         assertThat(responseBody.getId()).isNotNull();
         assertThat(responseBody.getUsername()).isEqualTo("user.test@email.com");
@@ -192,5 +197,34 @@ public class UserServiceUnitTest {
                 .hasMessageContaining("User [id=1] not founded.");
 
         verify(userRepository,times(1)).findById(any(Long.class));
+    }
+
+    @Test
+    @DisplayName("Successfully test when everything is OK")
+    void updatePassword_Successfully() {
+        // Arrange
+        Long id = 1L;
+        String newPassword = "123456";
+        String encodedNewPassword = "$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO";
+
+        User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "111111", "User Test"));
+        user.setId(id);
+
+        // Mock findById
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+
+        // Mock matches
+        when(passwordEncoder.matches(any(String.class), any(String.class))).thenReturn(true);
+
+        // Mock encode
+        when(passwordEncoder.encode(newPassword)).thenReturn(encodedNewPassword);
+
+        // Act
+        userService.updatePassword(id, user.getPassword(), newPassword, newPassword);
+
+        // Assert
+        assertThat(user.getPassword()).isEqualTo(encodedNewPassword);
+        verify(passwordEncoder, times(1)).matches(any(String.class), any(String.class));
+        verify(passwordEncoder, times(1)).encode(any(String.class));
     }
 }
