@@ -3,6 +3,7 @@ package br.com.aliriorios.done_and_dusted.ut.service;
 import br.com.aliriorios.done_and_dusted.entity.User;
 import br.com.aliriorios.done_and_dusted.entity.enums.Role;
 import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
+import br.com.aliriorios.done_and_dusted.exception.PasswordInvalidException;
 import br.com.aliriorios.done_and_dusted.exception.UsernameUniqueViolationException;
 import br.com.aliriorios.done_and_dusted.repository.UserRepository;
 import br.com.aliriorios.done_and_dusted.service.UserService;
@@ -226,5 +227,63 @@ public class UserServiceUnitTest {
         assertThat(user.getPassword()).isEqualTo(encodedNewPassword);
         verify(passwordEncoder, times(1)).matches(any(String.class), any(String.class));
         verify(passwordEncoder, times(1)).encode(any(String.class));
+    }
+
+    @Test
+    @DisplayName("Test failed, throw exception when currentPassword and confirmPassword unmatched")
+    void updatePassword_Failed_UnmatchedConfirmPassword() {
+        // Arrange
+        Long id = 1L;
+        String currentPassword = "111111";
+        String confirmPassword = "222222";
+        String newPassword = "123456";
+
+        // Assert
+        assertThatThrownBy(() -> userService.updatePassword(id, currentPassword, newPassword, confirmPassword))
+                .isInstanceOf(PasswordInvalidException.class)
+                .hasMessageContaining("New password does not match password confirmation", newPassword, confirmPassword);
+    }
+
+    @Test
+    @DisplayName("Test failed, throw exception when find by id failed")
+    void updatePassword_Failed_UserNotFound() {
+        // Arrange
+        Long id = 1L;
+        String currentPassword = "111111";
+        String confirmPassword = "123456";
+        String newPassword = "123456";
+
+        // Mock findById
+        when(userRepository.findById(any(Long.class)))
+                .thenThrow(new EntityNotFoundException(String.format("User [id=%s] not founded.", id)));
+
+        // Act
+        assertThatThrownBy(() -> userService.updatePassword(id, currentPassword, newPassword, confirmPassword))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining(String.format("User [id=%s] not founded", id));
+    }
+
+    @Test
+    @DisplayName("Test failed, thrown exception when current password unmatched with user.getPassword()")
+    void updatePassword_Failed_CurrentPasswordUnmatched() {
+        // Arrange
+        Long id = 1L;
+        String currentPassword = "111111";
+        String confirmPassword = "123456";
+        String newPassword = "123456";
+
+        User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "111111", "User Test"));
+        user.setId(id);
+
+        // Mock findById
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+
+        // Mock matches
+        when(passwordEncoder.matches(any(String.class), any(String.class))).thenReturn(false);
+
+        // Act
+        assertThatThrownBy(() -> userService.updatePassword(id, currentPassword, newPassword, confirmPassword))
+                .isInstanceOf(PasswordInvalidException.class)
+                .hasMessageContaining("The password entered does not match the user's");
     }
 }
