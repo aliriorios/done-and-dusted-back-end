@@ -111,7 +111,7 @@ public class UserServiceUnitTest {
 
         assertThatThrownBy(() -> userService.findById(user.getId()))
                 .isInstanceOf(EntityNotFoundException.class)
-                .hasMessageContaining("User [id=1] not founded.");
+                .hasMessageContaining(String.format("User [id=%s] not founded.", user.getId()));
 
         verify(userRepository, times(1)).findById(any(Long.class));
     }
@@ -264,7 +264,7 @@ public class UserServiceUnitTest {
     }
 
     @Test
-    @DisplayName("Test failed, thrown exception when current password unmatched with user.getPassword()")
+    @DisplayName("Test failed, throw exception when current password unmatched with user.getPassword()")
     void updatePassword_Failed_CurrentPasswordUnmatched() {
         // Arrange
         Long id = 1L;
@@ -285,5 +285,43 @@ public class UserServiceUnitTest {
         assertThatThrownBy(() -> userService.updatePassword(id, currentPassword, newPassword, confirmPassword))
                 .isInstanceOf(PasswordInvalidException.class)
                 .hasMessageContaining("The password entered does not match the user's");
+    }
+
+    @Test
+    @DisplayName("Successfully test when everything is OK")
+    void deleteById_Successfully() {
+        // Arrange
+        Long id = 1L;
+        User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "111111", "User Test"));
+        user.setId(id);
+
+        // Mock
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.of(user));
+
+        // Act
+        userService.deleteById(id);
+
+        // Assert
+        verify(userRepository, times(1)).deleteById(any(Long.class));
+    }
+
+    @Test
+    @DisplayName("Test failed, throw exception when user not found to delete")
+    void deleteById_Failed_UserNotFound() {
+        // Arrange
+        Long id = 1L;
+        User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "111111", "User Test"));
+        user.setId(id);
+
+        // Mock
+        when(userRepository.findById(any(Long.class))).thenReturn(Optional.empty());
+
+        // Act
+        assertThatThrownBy(() -> userService.deleteById(id))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining(String.format("User [id=%s] not founded.", id));
+
+        // Assert
+        verify(userRepository, times(1)).findById(any(Long.class));
     }
 }
