@@ -6,6 +6,7 @@ import br.com.aliriorios.done_and_dusted.exception.EntityNotFoundException;
 import br.com.aliriorios.done_and_dusted.repository.ClientRepository;
 import br.com.aliriorios.done_and_dusted.service.ClientService;
 import br.com.aliriorios.done_and_dusted.web.dto.RegisterDto;
+import br.com.aliriorios.done_and_dusted.web.dto.client.ClientUpdateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.ClientMapper;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.UserMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -128,6 +129,81 @@ public class ClientServiceUnitTest {
         verify(clientRepository, times(1)).findByUserId(client.getUser().getId());
     }
 
+    @Test
+    @DisplayName("Test successfully when everything is OK")
+    void updateProfile_Successfully() {
+        // Arrange
+        Client client = createEntities();
+        ClientUpdateDto updateDto = new ClientUpdateDto("Update Name", "2000-01-01", "12345678900", "123456789", "12345678911", client.getUser().getUsername());
+
+        // Mock
+        when(clientRepository.findByUserId(any(Long.class))).thenReturn(Optional.of(client));
+
+        // Act
+        clientService.updateProfile(client.getUser().getId(), updateDto);
+
+        // Assert
+        assertThat(client.getName()).isEqualTo("Update Name");
+        verify(clientRepository, times(1)).findByUserId(client.getUser().getId());
+    }
+
+    @Test
+    @DisplayName("Test failed when Client not found")
+    void updateProfile_Failed_ClientNotFound() {
+        // Arrange
+        Client client = createEntities();
+        ClientUpdateDto updateDto = new ClientUpdateDto("Update Name", "2000-01-01", "12345678900", "123456789", "12345678911", client.getUser().getUsername());
+
+        // Mock
+        when(clientRepository.findByUserId(any(Long.class)))
+                .thenThrow(new EntityNotFoundException(String.format("Client with User [id=%s] not found.", client.getUser().getId())));
+
+        // Act
+        assertThatThrownBy(() -> clientService.findByUserId(client.getId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining(String.format("Client with User [id=%s] not found.", client.getId()));
+
+        // Assert
+        verify(clientRepository, times(1)).findByUserId(client.getUser().getId());
+    }
+
+    // The DataIntegrityViolation exception in this method will never be thrown, because I have no way to simulate since I don't use .save()
+
+    @Test
+    @DisplayName("Test successfully when everything is OK")
+    void deleteById_Successfully() {
+        // Arrange
+        Client client = createEntities();
+
+        // Mock
+        when(clientRepository.findByUserId(any(Long.class))).thenReturn(Optional.of(client));
+
+        // Act
+        clientService.deleteById(client.getUser().getId());
+
+        // Assert
+        verify(clientRepository, times(1)).deleteById(client.getUser().getId());
+    }
+
+    @Test
+    @DisplayName("Test failed when Client not found")
+    void deleteById_Failed() {
+        // Arrange
+        Client client = createEntities();
+
+        // Mock
+        when(clientRepository.findByUserId(any(Long.class)))
+                .thenThrow(new EntityNotFoundException(String.format("Client with User [id=%s] not found.", client.getUser().getId())));
+
+        // Act
+        assertThatThrownBy(() -> clientService.deleteById(client.getId()))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining(String.format("Client with User [id=%s] not found.", client.getUser().getId()));
+
+        // Assert
+        verify(clientRepository, times(1)).findByUserId(client.getUser().getId());
+    }
+
     /* Creating User to Optimize the Creation Process */
     private Client createEntities() {
         RegisterDto createDto = new RegisterDto("user.test@email.com", "$2a$12$FqgCHaIfbdV5zdJ7i8NVEOL1XMybVlH9L3Kt3Owb1ED1NFKqOCxyO", "Client Test");
@@ -140,12 +216,4 @@ public class ClientServiceUnitTest {
 
         return client;
     }
-
-    // Arrange
-
-    // Mock
-
-    // Act
-
-    // Assert
 }

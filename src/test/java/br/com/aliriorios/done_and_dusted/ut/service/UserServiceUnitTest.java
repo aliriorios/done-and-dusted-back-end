@@ -168,7 +168,7 @@ public class UserServiceUnitTest {
     @DisplayName("Successfully test when everything is OK")
     void updateUsername() {
         Long id = 1L;
-        String newUsername = "New User Test";
+        String newUsername = "new.user.test@email.com";
 
         User user = UserMapper.toUser(new RegisterDto("user.test@email.com", "123456", "User Test"));
         user.setId(id);
