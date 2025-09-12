@@ -107,7 +107,7 @@ public class UserServiceUnitTest {
         user.setId(1L);
 
         when(userRepository.findById(any(Long.class)))
-                .thenThrow(new EntityNotFoundException(String.format("User [id=%s] not founded.", user.getId())));
+                .thenThrow(new EntityNotFoundException(String.format("User [id=%s] not found.", user.getId())));
 
         assertThatThrownBy(() -> userService.findById(user.getId()))
                 .isInstanceOf(EntityNotFoundException.class)

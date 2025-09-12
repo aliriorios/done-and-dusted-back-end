@@ -8,7 +8,6 @@ import br.com.aliriorios.done_and_dusted.repository.ClientRepository;
 import br.com.aliriorios.done_and_dusted.web.dto.client.ClientUpdateDto;
 import br.com.aliriorios.done_and_dusted.web.dto.mapper.ClientMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +29,14 @@ public class ClientService {
     @Transactional(readOnly = true)
     public Client findById(Long id) {
         return clientRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Client [id=%s] not founded.", id))
+                () -> new EntityNotFoundException(String.format("Client [id=%s] not found.", id))
         );
     }
 
     @Transactional(readOnly = true)
     public Client findByUserId(Long id) {
         return clientRepository.findByUserId(id).orElseThrow(
-                () -> new EntityNotFoundException(String.format("Client [id=%s] not founded.", id))
+                () -> new EntityNotFoundException(String.format("Client with User [id=%s] not found.", id))
         );
     }
 
