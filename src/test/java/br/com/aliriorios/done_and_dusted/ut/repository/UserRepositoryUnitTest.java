@@ -37,7 +37,6 @@ public class UserRepositoryUnitTest {
         assertThat(responseBody).isNotNull();
         assertThat(responseBody.isPresent()).isTrue();
         assertThat(responseBody.get().getUsername()).isEqualTo("bob@email.com");
-        assertThat(responseBody.get().getUsername()).isEqualTo("bob@email.com");
     }
 
     @Test
