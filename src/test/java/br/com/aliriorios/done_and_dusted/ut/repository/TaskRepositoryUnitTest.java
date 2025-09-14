@@ -24,6 +24,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ActiveProfiles("test")
 @DataJpaTest
@@ -92,6 +93,31 @@ public class TaskRepositoryUnitTest {
         Pageable pageable = PageRequest.of(0, 5);
         Page<Task> page = taskRepository.findAllPageable(client.getId(), pageable);
         assertThat(page.isEmpty()).isTrue();
+    }
+
+    @Test
+    @DisplayName("Test successfully")
+    void deleteAllTasks_Successfully() {
+        Client client = this.createClient();
+
+        for (int i=0; i<10; i++) {
+            Task task = createTask(client);
+        }
+        assertEquals(10, taskRepository.count()); // Check if insert tasks
+
+        taskRepository.deleteAllTasks();
+
+        assertEquals(0, taskRepository.count()); // Check if you have deleted all
+    }
+
+    @Test
+    @DisplayName("Test failed when task list is empty")
+    void deleteAllTasks_TaskListEmpty() {
+        assertEquals(0, taskRepository.count());
+
+        taskRepository.deleteAllTasks();
+
+        assertEquals(0, taskRepository.count());
     }
 
     /* Optimizing Client Creation */
